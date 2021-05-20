@@ -9,16 +9,15 @@ namespace CarsAndTrains
 {
     abstract public class Vehicle
     {
-        public bool isColiding { get; set; }
-        public bool isVisible { get; set; }
-        public bool arrived { get; set; }
-        public int deathAfterArivalTime { get; set; } //add Rand()
-        private int vehicleSpeed { get; set; }
-        private int currentSpeed { get; set; }
-        private int []rememberedNodes = new int[2]; //dodaj get set
-        private List<int> nodeList= new List<int> { };//dodaj get set
-        private Image currentGraphics { get; set; }
-        private Image widthGraphics { get; set; }
+        public bool IsColiding { get; set; }
+        public bool IsVisible { get; set; }
+        public bool Arrived { get; set; }
+        public int DeathAfterArivalTime { get; set; } //add Rand()
+        private int VehicleSpeed { get; set; }
+        private int CurrentSpeed { get; set; }
+        private Node PreviousNode { get; set; }
+        private Image CurrentGraphics { get; set; }
+        private Image WidthGraphics { get; set; }
 
 
         public Vehicle() { 
