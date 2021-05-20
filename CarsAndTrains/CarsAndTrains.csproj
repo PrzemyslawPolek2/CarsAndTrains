@@ -70,6 +70,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Node\Light.cs" />
+    <Compile Include="Classes\Node\Node.cs" />
+    <Compile Include="Classes\Node\Rogatka.cs" />
+    <Compile Include="Classes\Node\TrainTriggerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
