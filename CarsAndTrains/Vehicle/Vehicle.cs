@@ -9,9 +9,9 @@ namespace CarsAndTrains
 {
     abstract public class Vehicle
     {
-        public Boolean isColiding { get; set; }
-        public Boolean isVisible { get; set; }
-        public Boolean arrived { get; set; }
+        public bool isColiding { get; set; }
+        public bool isVisible { get; set; }
+        public bool arrived { get; set; }
         public int deathAfterArivalTime { get; set; } //add Rand()
         private int vehicleSpeed { get; set; }
         private int currentSpeed { get; set; }
