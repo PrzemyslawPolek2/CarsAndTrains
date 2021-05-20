@@ -20,9 +20,28 @@ namespace CarsAndTrains
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow GetMain;
+        
         public MainWindow()
         {
+            GetMain = this;
             InitializeComponent();
+            clickPositionL.Content = "[" + GetMain.getCanvasHeight() + ";" + GetMain.getCanvasWidth() + "]";
+        }
+
+        private void CanvasMouseDownEventHandler(object sender, MouseButtonEventArgs e)
+        {
+            Point p = Mouse.GetPosition(canvas);
+            clickPositionL.Content = "[" + p.X + ";" + p.Y + "]";
+        }
+
+        public double getCanvasWidth()
+        {
+            return canvas.Width;
+        }
+        public double getCanvasHeight()
+        {
+            return canvas.Height;
         }
     }
 }
