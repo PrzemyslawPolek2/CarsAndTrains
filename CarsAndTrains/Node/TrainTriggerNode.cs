@@ -8,8 +8,8 @@ namespace CarsAndTrains
 {
     class TrainTriggerNode : Node
     {
-        private Boolean isTriggered;
-        private Node rogatka;
+        private bool isTriggered { get; set; }
+        private Node turnpike { get; set; }
 
         public TrainTriggerNode()
         {

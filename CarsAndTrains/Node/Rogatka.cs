@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace CarsAndTrains
 {
-    class Rogatka : Node
+    class Turnpike : Node
     {
-        //private LIGHTS
-
-            public Rogatka()
-        {
-
-        }
+        private Light[] lights { get; set; }
         
 
         public void triggerRogatka()
