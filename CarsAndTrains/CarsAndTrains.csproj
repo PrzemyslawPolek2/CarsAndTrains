@@ -56,6 +56,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\Controller.cs" />
+    <Compile Include="Vehicle\Car.cs" />
+    <Compile Include="Vehicle\Train.cs" />
+    <Compile Include="Vehicle\Vehicle.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

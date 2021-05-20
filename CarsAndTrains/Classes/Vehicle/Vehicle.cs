@@ -9,9 +9,9 @@ namespace CarsAndTrains
 {
     abstract public class Vehicle
     {
-        public Boolean isColiding { get; set; }
-        public Boolean isVisible { get; set; }
-        public Boolean arrived { get; set; }
+        public bool isColiding { get; set; }
+        public bool isVisible { get; set; }
+        public bool arrived { get; set; }
         public int deathAfterArivalTime { get; set; } //add Rand()
         private int vehicleSpeed { get; set; }
         private int currentSpeed { get; set; }
@@ -22,21 +22,6 @@ namespace CarsAndTrains
 
 
         public Vehicle() { 
-            
-        }
-
-        public Vehicle(Boolean isColding, Boolean isVisible, int deathAfterArivalTime, int vehicleSpeed, int currentSpeed, int[] rememberedNodes, 
-            List<int> nodeList, Image currentGraphics, Image widthGraphics) 
-        {
-            this.isColiding = isColding;
-            this.isVisible = isVisible;
-            this.deathAfterArivalTime = deathAfterArivalTime;
-            this.vehicleSpeed = vehicleSpeed;
-            this.currentSpeed = currentSpeed;
-            this.rememberedNodes = rememberedNodes;
-            this.nodeList = nodeList;
-            this.currentGraphics = currentGraphics;
-            this.widthGraphics = widthGraphics;
         
         }
 
