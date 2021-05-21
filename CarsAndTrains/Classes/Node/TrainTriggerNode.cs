@@ -16,7 +16,7 @@ namespace CarsAndTrains
 
         }
 
-        public void triggerRogatka()
+        public void triggerTurnpike()
         {
 
         }

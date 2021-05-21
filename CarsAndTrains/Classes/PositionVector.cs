@@ -21,7 +21,7 @@ namespace CarsAndTrains.Classes
             this.length = length;
         }
 
-        private void setNormalized(double normalizedX, double normalizedY)
+        public void setNormalized(double normalizedX, double normalizedY)
         {
             this.normalizedX = normalizedX;
             this.normalizedY = normalizedY;

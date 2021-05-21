@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\Controller.cs" />
+    <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\Vehicle\Car.cs" />
     <Compile Include="Classes\Vehicle\Train.cs" />
     <Compile Include="Classes\Vehicle\Vehicle.cs" />
@@ -75,7 +76,7 @@
   <ItemGroup>
     <Compile Include="Classes\Node\Light.cs" />
     <Compile Include="Classes\Node\Node.cs" />
-    <Compile Include="Classes\Node\Rogatka.cs" />
+    <Compile Include="Classes\Node\Turnpike.cs" />
     <Compile Include="Classes\Node\TrainTriggerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
