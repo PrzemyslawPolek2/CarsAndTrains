@@ -15,10 +15,8 @@ namespace CarsAndTrains
 
         protected Point normalizedPosition;
 
-        public Point getDirection()
-        {
-            return normalizedPosition;
-        }
+        public Vector vector { get; private set; }
+
 
         private void calculateVector(Node nextNode)
         {
@@ -29,8 +27,10 @@ namespace CarsAndTrains
             yVector = Math.Pow((nextNode.position.Y - this.position.Y), 2);
             finalVector = Math.Sqrt(xVector + yVector);
 
-            normalizedPosition.X = xVector / finalVector;
-            normalizedPosition.Y = yVector / finalVector;
+            vector = new Vector(position.X, position.Y, finalVector);
+
+            //normalizedPosition.X = xVector / finalVector;
+            //normalizedPosition.Y = yVector / finalVector;
 
         }
 
