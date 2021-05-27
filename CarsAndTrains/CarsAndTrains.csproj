@@ -55,10 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classes\Controllers\Controller.cs" />
-    <Compile Include="Vehicle\Car.cs" />
-    <Compile Include="Vehicle\Train.cs" />
-    <Compile Include="Vehicle\Vehicle.cs" />
+    <Compile Include="Classes\PublicAvaliableReferences.cs" />
+    <Compile Include="Classes\Vehicle\Car.cs" />
+    <Compile Include="Classes\Vehicle\Train.cs" />
+    <Compile Include="Classes\Vehicle\Vehicle.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +67,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enums\GraphicDirection.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -75,7 +76,6 @@
   <ItemGroup>
     <Compile Include="Classes\Node\Light.cs" />
     <Compile Include="Classes\Node\Node.cs" />
-    <Compile Include="Classes\Node\Rogatka.cs" />
     <Compile Include="Classes\Node\TrainTriggerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -104,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Map\map.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\Controllers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Cars\Blue\blue_car_left.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

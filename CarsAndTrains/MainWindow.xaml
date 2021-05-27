@@ -12,7 +12,8 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Canvas x:Name="canvas" Height="400" Width="535" Margin="16,40,6,29" MouseDown="CanvasMouseDownEventHandler" Grid.RowSpan="2">
-            <Image Source="/Resources/Images/Map/map.png" Height="400" Width="535"></Image>
+            <Image x:Name="exampleCar" Source="/Resources/Images/Cars/blue_car_sideways.png" Canvas.Top="120" Canvas.Left="6" Width="30" Height="20" Panel.ZIndex="5"></Image>
+            <Image Source="/Resources/Images/Map/map.png" Height="400" Width="535" Panel.ZIndex="0"></Image>
         </Canvas>
         <Label x:Name="clickPositionL" Content="Label" HorizontalAlignment="Left" Height="40" Margin="10,10,0,0" VerticalAlignment="Top" Width="535" Grid.Row="1"/>
     </Grid>
