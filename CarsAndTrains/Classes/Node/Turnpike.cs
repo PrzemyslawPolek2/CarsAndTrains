@@ -11,10 +11,6 @@ namespace CarsAndTrains
         private Light[] lights { get; set; }
         
 
-        public void triggerTurnpike()
-        {
-
-        }
 
         private void changeLights()
         {

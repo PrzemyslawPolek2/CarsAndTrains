@@ -8,7 +8,6 @@ namespace CarsAndTrains
 {
     class TrainTriggerNode : Node
     {
-        private bool isTriggered { get; set; }
         private Node turnpike { get; set; }
 
         public TrainTriggerNode()
@@ -18,11 +17,9 @@ namespace CarsAndTrains
 
         public void triggerTurnpike()
         {
-
+            //funcja uruchomi się, gdy pociąg wjedzie na nodea
+            //Ma zmienić światła na przeciwne i zablokować  node'a dla samochodów przed torami
         }
-        private void sendTrigger()
-        {
 
-        }
     }
 }
