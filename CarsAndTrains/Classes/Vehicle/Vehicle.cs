@@ -37,30 +37,36 @@ namespace CarsAndTrains
             this.CounterNodes = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.ActualPosition = ActualPosition;
+           
+            CanMove = true;
+            CanColiding = true;
             IsVisible = true;
-
-            //ustaw wartosci dla booli domyslne
-
-            DeathAfterArivalTime = random();
+            Arrived = false;
+            
+            DeathAfterArivalTime = Random();
         }
 
 
-        virtual public void updateVehicle() 
+        public virtual void UpdateVehicle() 
         {
-            //jeśli jeden samochód zbliży się za blisko do drugiego to weź prędkość od samochodu -1 
-            // if ((this.ActualPosition.y - Car[a + 1].ActualPosition.y) && (Car[a].ActualPosition.y < Car[a - 1].ActualPosition)
+            
+
+            if (ActualPosition.X == NodeList[CounterNodes].X & ActualPosition.Y == NodeList[CounterNodes].Y & IsVisible)
+            {
+                CounterNodes -= 1;
+                //aktualizacja grafik, w momencie jak samochód dojedzie do Node'a (niezawsze) i jesli jest is Visible
+            }
 
 
-            //aktualizacja grafik, w momencie jak samochód skońćzy dojedzie do Node'a (niezawsze) i jesli jest is Visible
+            if ()
+            {
 
-            //zwalnianie predkosci z nodea biorę vector x i y i pointsy
+                //zwalnianie predkosci z nodea biorę vector x i y i pointsy
 
-            //
-
-
-
-
-
+            }
+            if (CounterNodes == 0) {
+                EmptiedNodesAction();
+            }
 
             // ActualPosition.x = ActualPosition.x + CurrentSpeed.x; zadziałą jak VehicleSpeed będzie mi już oddawać Vectora
             //ActualPosition.y = ActualPosition.y + CurrentSpeed.y; 
@@ -68,16 +74,17 @@ namespace CarsAndTrains
             // throw new NotImplementedException();
         }
 
-        private void emptiedNodesAction()//TODO funkcja która się zrobi jak CounterNodes=0
+        private void EmptiedNodesAction()//TODO funkcja która się zrobi jak CounterNodes=0
         {
+
             throw new NotImplementedException();
         }
 
-        protected void getNewGraphic() //póxniej
+        protected void GetNewGraphic() //póxniej, czyli jak będą grafiki
         {
             throw new NotImplementedException();
         }
-        protected int random(int minRandom = 1, int maxRandom = 10)
+        protected int Random(int minRandom = 1, int maxRandom = 10)
         {
             var rand = new Random();
 
