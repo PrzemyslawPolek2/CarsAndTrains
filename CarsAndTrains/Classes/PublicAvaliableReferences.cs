@@ -86,7 +86,6 @@ namespace CarsAndTrains.Classes
                         Panel.SetZIndex(ellipse, 5);
                         canvas.Children.Add(ellipse);
                     }
-                    
                 }
             }
         }
@@ -139,6 +138,18 @@ namespace CarsAndTrains.Classes
             throw new NotImplementedException();
             return false;
         }
+
+        public static Node GetNextNode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static string GetNextGraphic()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public static double GetNext
 
     }
 }
