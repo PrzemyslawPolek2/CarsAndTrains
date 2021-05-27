@@ -11,12 +11,12 @@ namespace CarsAndTrains
         private Light[] lights { get; set; }
         
 
-        public void triggerRogatka()
+        public void triggerTurnpike()
         {
 
         }
 
-        private void sendTrigger()
+        private void changeLights()
         {
 
         }
