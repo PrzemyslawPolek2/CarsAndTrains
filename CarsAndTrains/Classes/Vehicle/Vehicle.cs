@@ -20,7 +20,7 @@ namespace CarsAndTrains.Classes.Vehicle
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
         public int CounterNodes { get; set; }
-        public float DeathAfterArivalTime { get; set; }
+        public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
         public Point ActualPosition { get; set; } = new Point();
         public double WidthGraphics { get; protected set; }
@@ -37,7 +37,7 @@ namespace CarsAndTrains.Classes.Vehicle
         
         }
 
-        public Vehicle(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime) //Car
+        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime) //Car
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
@@ -54,9 +54,9 @@ namespace CarsAndTrains.Classes.Vehicle
         #region public methods
         public virtual void UpdateVehicle()
         {
-            Node nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
+            Node.Node nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
 
-            if (!CanMove | nextNode.canGoThrough)
+            if (!CanMove | nextNode.CanGoThrough)
                 return;
 
             if (CanColiding)
@@ -81,14 +81,14 @@ namespace CarsAndTrains.Classes.Vehicle
         }
         #endregion
         #region private methods
-        private Node DidArriveToNode(Node nextNode)
+        private Node.Node DidArriveToNode(Node.Node nextNode)
         {
-            if (positionVector.length - TraveledDistance <= OFFSET)
+            if (positionVector.Length - TraveledDistance <= OFFSET)
             {
                 CounterNodes = CounterNodes - 1;
-                nextNode = PublicAvaliableReferences.GetNextNode();
-                positionVector = nextNode.vector;
-                if (nextNode.canGoThrough)
+                nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);
+                positionVector = nextNode.Vector;
+                if (nextNode.CanGoThrough)
                     currentGraphics = PublicAvaliableReferences.GetNextGraphic();
             }
 
@@ -96,8 +96,8 @@ namespace CarsAndTrains.Classes.Vehicle
         }
         private void MoveVehicleBeetweenNodes()
         {
-            if (positionVector.length < currentSpeed)
-                currentSpeed = currentSpeed - positionVector.length;
+            if (positionVector.Length < currentSpeed)
+                currentSpeed = currentSpeed - positionVector.Length;
             ActualPosition = new Point(ActualPosition.X * currentSpeed, ActualPosition.Y * currentSpeed);
             TraveledDistance = TraveledDistance + currentSpeed;
         }

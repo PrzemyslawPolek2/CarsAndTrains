@@ -17,7 +17,7 @@ namespace CarsAndTrains.Classes.Vehicle
 
         }
 
-        public Car(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime) : base(VehicleSpeed,
+        public Car(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime) : base(VehicleSpeed,
                                                                                           CounterNodes,
                                                                                           DeathAfterArivalTime)
         {
@@ -25,7 +25,7 @@ namespace CarsAndTrains.Classes.Vehicle
         }
         public override void UpdateVehicle()
         {
-
+            throw new NotImplementedException();
         }
 
     }

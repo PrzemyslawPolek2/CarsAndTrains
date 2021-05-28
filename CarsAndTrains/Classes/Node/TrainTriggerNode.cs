@@ -18,11 +18,16 @@ namespace CarsAndTrains.Classes.Node
         {
 
         }
+        public TrainTriggerNode(Node turnpike)
+        {
+
+        }
         #endregion
 
         #region Methods
         public void TriggerTurnpike()
         {
+            throw new NotImplementedException();
             //funcja uruchomi się, gdy pociąg wjedzie na nodea
             //Ma zmienić światła na przeciwne i zablokować  node'a dla samochodów przed torami
         }

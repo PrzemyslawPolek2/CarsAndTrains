@@ -16,7 +16,7 @@ namespace CarsAndTrains.Classes.Vehicle
 
         }
 
-        public Train(int VehicleSpeed, int CounterNodes) //Train
+        public Train(double VehicleSpeed, int CounterNodes) //Train
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
@@ -29,7 +29,7 @@ namespace CarsAndTrains.Classes.Vehicle
 
         public override void UpdateVehicle()
         {
-            
+            throw new NotImplementedException();
         }
     }
 }
