@@ -16,7 +16,7 @@ namespace CarsAndTrains.Classes.Vehicle
 
         public static Car CreateCar(int nodesNumber)
         {
-            Car car = new Car(RandomSpeedGenerator(),nodesNumber, RandomDeathGenerator());
+            Car car = new Car(RandomSpeedGenerator(), nodesNumber, RandomDeathGenerator());
             return car;
         }
 

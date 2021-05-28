@@ -114,7 +114,7 @@ namespace CarsAndTrains.Classes
                 foreach(Car car in cars)
                 {
                     car.UpdateVehicle();
-                    if (car.Arrived)
+                    if (car.Arrived())
                     {
                         
                         if (car.DeathAfterArivalTime <= 0.0f)
@@ -173,7 +173,7 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static Node GetNextNode(int rawCurrentlyUsedNode)
+        public static Node.Node GetNextNode(int rawCurrentlyUsedNode)
         {
             lock (carNodes)
             {
