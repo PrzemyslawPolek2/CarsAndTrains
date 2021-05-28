@@ -54,7 +54,7 @@ namespace CarsAndTrains
         {
             Node nextNode = PublicAvaliableReferences.GetNextNode();//GetNextNode wysyłą parametr CounterNodes
 
-            if (!CanMove | nextNode.canGoThrough) 
+            if (!CanMove | nextNode.CanGoThrough) 
                 return;
 
             if (CanColiding)
@@ -62,20 +62,20 @@ namespace CarsAndTrains
                 SpeedControlBasedOnNextVehicle();
             }
             //przesuwanie auta miedzy nodami
-            if (positionVector.length < CurrentSpeed) 
+            if (positionVector.Length < CurrentSpeed) 
             {
-                CurrentSpeed = CurrentSpeed - positionVector.length;
+                CurrentSpeed = CurrentSpeed - positionVector.Length;
                 
             }
             ActualPosition = new Point(ActualPosition.X * CurrentSpeed, ActualPosition.Y * CurrentSpeed);
             traveledDistance = traveledDistance + CurrentSpeed;
             //sprawdzanie czy dojechal do node
-            if (positionVector.length - traveledDistance <= OFFSET) 
+            if (positionVector.Length - traveledDistance <= OFFSET) 
             {
                 CounterNodes = CounterNodes - 1;
                 nextNode= PublicAvaliableReferences.GetNextNode();
-                positionVector = nextNode.vector;    
-                if (nextNode.canGoThrough)
+                positionVector = nextNode.Vector;    
+                if (nextNode.CanGoThrough)
                     CurrentGraphics =PublicAvaliableReferences.GetNextGraphic();
             }
 

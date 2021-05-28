@@ -8,23 +8,23 @@ namespace CarsAndTrains.Classes
 {
     class PositionVector
     {
-        public double x { get; private set; }
-        public double y {get; private set;}
-        public double length {get; private set;}
-        public double normalizedX {get; private set;}
-        public double normalizedY {get; private set;}
+        public double X { get; private set; }
+        public double Y {get; private set;}
+        public double Length {get; private set;}
+        public double NormalizedX {get; private set;}
+        public double NormalizedY {get; private set;}
 
         public PositionVector(double x, double y, double length)
         {
-            this.x = x;
-            this.y = y;
-            this.length = length;
+            this.X = x;
+            this.Y = y;
+            this.Length = length;
         }
 
-        public void setNormalized(double normalizedX, double normalizedY)
+        public void SetNormalized(double normalizedX, double normalizedY)
         {
-            this.normalizedX = normalizedX;
-            this.normalizedY = normalizedY;
+            this.NormalizedX = normalizedX;
+            this.NormalizedY = normalizedY;
         }
     }
 }

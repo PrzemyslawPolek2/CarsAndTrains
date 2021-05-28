@@ -8,11 +8,11 @@ namespace CarsAndTrains
 {
     class Turnpike : Node
     {
-        private Light[] lights { get; set; }
+        private Light[] Lights { get; set; }
         
 
 
-        private void changeLights()
+        private void ChangeLights()
         {
 
         }
