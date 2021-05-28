@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
+using CarsAndTrains.Classes.Controllers;
 
 namespace CarsAndTrains.Classes
 {
@@ -41,7 +42,7 @@ namespace CarsAndTrains.Classes
         public static void Initialize(Canvas passedCanvas)
         {
             canvas = passedCanvas;
-            //CreateCarsPool();
+            CreateCarsPool();
             //CreateTrainsPool();
             CreateNodes();
             //ForceNodeCalculation();
@@ -67,25 +68,28 @@ namespace CarsAndTrains.Classes
                 while ((s = sr.ReadLine()) != null)
                 {
                     string[] values = s.Split(' ');
-                    if (drawNodes)
+                    if (!drawNodes)
                     {
-                        Ellipse ellipse = new Ellipse
-                        {
-                            Width = 20,
-                            Height = 20,
-                            Fill = new SolidColorBrush
-                            {
-                                Color = Color.FromArgb(255,
-                                                       128,
-                                                       255,
-                                                       0)
-                            }
-                        };
-                        Canvas.SetLeft(ellipse, float.Parse(values[0]));
-                        Canvas.SetTop(ellipse, float.Parse(values[1]));
-                        Panel.SetZIndex(ellipse, 5);
-                        canvas.Children.Add(ellipse);
+                        continue;
                     }
+
+                    Ellipse ellipse = new Ellipse
+                    {
+                        Width = 20,
+                        Height = 20,
+                        Fill = new SolidColorBrush
+                        {
+                            Color = Color.FromArgb(255,
+                                                   128,
+                                                   255,
+                                                   0)
+                        }
+                    };
+                    Canvas.SetLeft(ellipse, float.Parse(values[0]));
+                    Canvas.SetTop(ellipse, float.Parse(values[1]));
+                    Node node = new Node();
+                    Panel.SetZIndex(ellipse, 5);
+                    canvas.Children.Add(ellipse);
                 }
             }
         }
@@ -108,7 +112,6 @@ namespace CarsAndTrains.Classes
         private static void CreateCarsPool()
         {
             cars = new List<Car>();
-            throw new NotImplementedException();
 
         }
 
@@ -123,12 +126,11 @@ namespace CarsAndTrains.Classes
 
         public static void UpdateAllVehicles()
         {
-            throw new NotImplementedException();
             lock (cars)
             {
                 foreach(Car car in cars)
                 {
-                    car.updateVehicle();
+                    car.UpdateVehicle();
                 }
             }
         }

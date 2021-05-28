@@ -15,6 +15,7 @@ namespace CarsAndTrains
         protected Point position { get; set; }
 
 
+
         public PositionVector vector { get; private set; }
 
 

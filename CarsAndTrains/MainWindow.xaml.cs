@@ -23,7 +23,9 @@ namespace CarsAndTrains
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
         public static MainWindow GetMain;
+        public static bool CreateNode;
         
         public MainWindow()
         {
@@ -42,11 +44,19 @@ namespace CarsAndTrains
         {
             Point p = Mouse.GetPosition(canvas);
             string str = p.X + " " + p.Y;
-            string path = System.Reflection.Assembly.GetEntryAssembly().Location;
-            path = System.IO.Path.GetDirectoryName(path) + "/nodePositions.txt";
+
             clickPositionL.Content = str;
 
-            return;
+            if (!CreateNode)
+                return;
+            CreateNodePosition(str);
+        }
+
+        private static void CreateNodePosition(string str)
+        {
+            string path = System.Reflection.Assembly.GetEntryAssembly().Location;
+            path = System.IO.Path.GetDirectoryName(path) + NODE_POSITION_FILE_NAME;
+
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
@@ -61,17 +71,6 @@ namespace CarsAndTrains
                     sw.WriteLine(str);
                 }
             }
-
-            //
-            //using (StreamReader sr = File.OpenText(path))
-            //{
-            //    string s = "";
-            //    while ((s = sr.ReadLine()) != null)
-            //    {
-            //        Console.WriteLine(s);
-            //    }
-            //}
-            
         }
 
         public double GetCanvasWidth()
