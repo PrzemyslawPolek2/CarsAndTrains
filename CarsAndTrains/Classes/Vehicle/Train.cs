@@ -7,22 +7,29 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-public class Train : Vehicle
+namespace CarsAndTrains.Classes.Vehicle
 {
-    public Train()
-    { 
-    
-    }
-    public Train(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime, Point ActualPosition) : base(VehicleSpeed,
-                                                                                                            CounterNodes,
-                                                                                                            DeathAfterArivalTime,
-                                                                                                            ActualPosition)
-    { 
-    
-    }
-
-    public override void UpdateVehicle()
+    public class Train : Vehicle
     {
+        public Train()
+        {
 
+        }
+
+        public Train(int VehicleSpeed, int CounterNodes) //Train
+        {
+            this.VehicleSpeed = VehicleSpeed;
+            this.CounterNodes = CounterNodes;
+
+            CanMove = true;
+            CanColiding = false;
+            IsVisible = false;
+            IsActive = true;
+        }
+
+        public override void UpdateVehicle()
+        {
+            
+        }
     }
 }

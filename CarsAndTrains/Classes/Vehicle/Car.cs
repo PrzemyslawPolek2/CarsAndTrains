@@ -7,24 +7,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-public class Car : Vehicle
+namespace CarsAndTrains.Classes.Vehicle
 {
-    public Car()
+    public class Car : Vehicle
     {
+        public Car()
+        {
 
+
+        }
+
+        public Car(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime) : base(VehicleSpeed,
+                                                                                          CounterNodes,
+                                                                                          DeathAfterArivalTime)
+        {
+
+        }
+        public override void UpdateVehicle()
+        {
+
+        }
 
     }
-
-    public Car(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime, Point ActualPosition) : base(VehicleSpeed,
-                                                                                                            CounterNodes,
-                                                                                                            DeathAfterArivalTime,
-                                                                                                            ActualPosition)
-    {
-
-    }
-    public override void UpdateVehicle()
-    {
-
-    }
-    
 }
