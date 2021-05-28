@@ -14,8 +14,8 @@ namespace CarsAndTrains.Classes
     {
         protected static List<Train> trains;
         protected static List<Car> cars;
-        protected static List<Node> carNodes;
-        protected static List<Node> trainNodes;
+        protected static List<Node.Node> carNodes;
+        protected static List<Node.Node> trainNodes;
 
         protected static string[] vehicleGraphicsURL = new string[8];
         protected static string[] trainGraphicsURL = new string[8];
@@ -26,7 +26,6 @@ namespace CarsAndTrains.Classes
         protected static bool drawNodes = true; 
         protected static bool drawCars = true; 
         protected static bool drawTrains = true; 
-
 
         public static void Initialize(Canvas passedCanvas)
         {
@@ -58,7 +57,7 @@ namespace CarsAndTrains.Classes
                     string[] values = s.Split(' ');
                     float xValue = float.Parse(values[0]);
                     float yValue = float.Parse(values[1]);
-                    carNodes.Add(new Node(new Point(xValue, yValue)));
+                    carNodes.Add(new Classes.Node.Node(new Point(xValue, yValue)));
                     if (!drawNodes)
                         continue;
 
@@ -114,7 +113,7 @@ namespace CarsAndTrains.Classes
                 foreach(Car car in cars)
                 {
                     car.UpdateVehicle();
-                    if (car.Arrived())
+                    if (car.Arived())
                     {
                         
                         if (car.DeathAfterArivalTime <= 0.0f)
@@ -195,15 +194,29 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static double GetNextVehicleWidth(Vehicle.Vehicle vehicle)
+        public static double GetNextVehicleSpeed(Vehicle.Vehicle passedVehicle)
         {
-            throw new NotImplementedException();
-        }
+            lock (carNodes)
+            {
+                foreach (Vehicle.Vehicle vehicle in cars)
+                {
+                    if (vehicle == passedVehicle)
+                        continue;
 
-        public static double GetNextVehicleSpeed(Vehicle.Vehicle vehicle)
-        {
-            throw new NotImplementedException();
-        }
+                    if (vehicle.CounterNodes != passedVehicle.CounterNodes)
+                        continue;
 
+                    double thisVehicleBack = vehicle.TraveledDistance - vehicle.WidthGraphics / 2;
+                    double passedVehicleLimit = passedVehicle.TraveledDistance - passedVehicle.WidthGraphics / 2;
+                    if (passedVehicleLimit > thisVehicleBack)
+                        continue;
+                    passedVehicleLimit += passedVehicle.WidthGraphics;
+                    if (passedVehicleLimit >= thisVehicleBack)
+                        return true;
+                    else
+                        continue;
+                }
+            }
+        }
     }
 }
