@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace CarsAndTrains.Classes.Vehicle {
+namespace CarsAndTrains.Classes.Vehicle
+{
     public class Car : Vehicle
     {
         public Car()
@@ -16,10 +17,9 @@ namespace CarsAndTrains.Classes.Vehicle {
 
         }
 
-        public Car(double VehicleSpeed, int CounterNodes, float DeathAfterArivalTime, Point ActualPosition) : base(VehicleSpeed,
-                                                                                                                CounterNodes,
-                                                                                                                DeathAfterArivalTime,
-                                                                                                                ActualPosition)
+        public Car(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime) : base(VehicleSpeed,
+                                                                                          CounterNodes,
+                                                                                          DeathAfterArivalTime)
         {
 
         }
@@ -27,5 +27,6 @@ namespace CarsAndTrains.Classes.Vehicle {
         {
 
         }
+
     }
 }

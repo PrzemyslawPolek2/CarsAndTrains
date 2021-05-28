@@ -1,5 +1,4 @@
 ﻿using CarsAndTrains;
-using CarsAndTrains.Classes.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +15,21 @@ namespace CarsAndTrains.Classes.Vehicle
         {
 
         }
-        public Train(int VehicleSpeed, int CounterNodes, float DeathAfterArivalTime, Point ActualPosition) : base(VehicleSpeed,
-                                                                                                                CounterNodes,
-                                                                                                                DeathAfterArivalTime,
-                                                                                                                ActualPosition)
-        {
 
+        public Train(int VehicleSpeed, int CounterNodes) //Train
+        {
+            this.VehicleSpeed = VehicleSpeed;
+            this.CounterNodes = CounterNodes;
+
+            CanMove = true;
+            CanColiding = false;
+            IsVisible = false;
+            IsActive = true;
         }
 
         public override void UpdateVehicle()
         {
-
+            
         }
     }
 }
