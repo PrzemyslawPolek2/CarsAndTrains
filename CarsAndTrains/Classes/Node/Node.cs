@@ -18,6 +18,18 @@ namespace CarsAndTrains
 
         public PositionVector vector { get; private set; }
 
+        public Node()
+        {
+
+        }
+
+
+        public Node(Point position)
+        {
+            this.position = position;
+        }
+
+
 
         private void calculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
         {
