@@ -9,13 +9,13 @@ namespace CarsAndTrains.Classes.Node
     class Turnpike : Node
     {
         private Light[] Lights { get; set; }
-        
 
 
+        #region Methods
         private void ChangeLights()
         {
 
         }
-
+        #endregion
     }
 }
