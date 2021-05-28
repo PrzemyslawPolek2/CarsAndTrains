@@ -8,7 +8,7 @@ using System.Windows;
 using System.Runtime;
 using CarsAndTrains.Classes;
 
-namespace CarsAndTrains
+namespace CarsAndTrains.Classes.Vehicle
 {
     abstract public class Vehicle
     {
@@ -23,12 +23,12 @@ namespace CarsAndTrains
         private double CurrentSpeed { get; set; }  //aktualna prędkość brana od samochodu przede mną na liście samochodów, brana w momencie jak pojazd a dojedzie 
                                                 //do WidthGraphics pojazdu a-1
         private PositionVector positionVector;
-        private double traveledDistance;
+        public double TraveledDistance { get; protected set; }
         private const double OFFSET=15;
         public int CounterNodes { get; set; }//licznik Nodów ile zostało do przejścia, jak dojdzie do zera to IsVisible=false dojechał do końca trasy
                                 
         private string CurrentGraphics { get; set; }//dostaje od Polka
-        private string WidthGraphics { get; set; }//dostaje od Polka 
+        public double WidthGraphics { get; set; }//dostaje od Polka 
 
         public Vehicle() 
         { 
@@ -68,9 +68,9 @@ namespace CarsAndTrains
                 
             }
             ActualPosition = new Point(ActualPosition.X * CurrentSpeed, ActualPosition.Y * CurrentSpeed);
-            traveledDistance = traveledDistance + CurrentSpeed;
+            TraveledDistance = TraveledDistance + CurrentSpeed;
             //sprawdzanie czy dojechal do node
-            if (positionVector.length - traveledDistance <= OFFSET) 
+            if (positionVector.length - TraveledDistance <= OFFSET) 
             {
                 CounterNodes = CounterNodes - 1;
                 nextNode= PublicAvaliableReferences.GetNextNode();
