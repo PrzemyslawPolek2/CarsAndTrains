@@ -132,8 +132,12 @@ namespace CarsAndTrains.Classes
                 }
             }
         }
-
-        public static bool IsVehicleInTheWay(Car car)
+        public static bool VehiclesExistOnPath(Vehicle vehicle)
+        {
+            throw new NotImplementedException();
+            return false;
+        }
+        public static bool IsVehicleInTheWay(Vehicle vehicle)
         {
             throw new NotImplementedException();
             return false;
@@ -148,8 +152,16 @@ namespace CarsAndTrains.Classes
         {
             throw new NotImplementedException();
         }
-        
-        public static double GetNext
+
+        public static double GetNextVehicleWidth(Vehicle vehicle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static double GetNextVehicleSpeed(Vehicle vehicle)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

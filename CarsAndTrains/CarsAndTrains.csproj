@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
     <Compile Include="Classes\Vehicle\Car.cs" />
     <Compile Include="Classes\Vehicle\Train.cs" />
