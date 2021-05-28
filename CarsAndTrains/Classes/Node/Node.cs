@@ -13,8 +13,13 @@ namespace CarsAndTrains
 
         public bool canGoThrough { get; set; }
         protected Point position { get; set; }
+        private bool isActive;
 
-
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
+        }
 
         public PositionVector vector { get; private set; }
 
