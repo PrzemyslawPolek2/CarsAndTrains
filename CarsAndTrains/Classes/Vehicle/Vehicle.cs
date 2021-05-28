@@ -25,6 +25,7 @@ namespace CarsAndTrains.Classes.Vehicle
         public Point ActualPosition { get; set; } = new Point();
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
+        public int NextVehicleIndex { get; protected set; }
         #endregion
         #region private fields
         private double currentSpeed;
@@ -37,7 +38,7 @@ namespace CarsAndTrains.Classes.Vehicle
         
         }
 
-        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime) //Car
+        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) //Car
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
@@ -48,6 +49,7 @@ namespace CarsAndTrains.Classes.Vehicle
             IsVisible = true;
             IsActive = true;
         }
+
         #endregion
 
 
