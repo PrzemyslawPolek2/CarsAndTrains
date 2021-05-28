@@ -113,6 +113,8 @@ namespace CarsAndTrains.Classes.Vehicle
             }
         }
 
+        public bool Arived() => CounterNodes == 0;
+
         private void EmptiedNodesAction()
         {
             IsVisible = false;
