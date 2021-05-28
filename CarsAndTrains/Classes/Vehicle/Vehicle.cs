@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Runtime;
 using CarsAndTrains.Classes;
+using CarsAndTrains.Classes.Node;
 
 namespace CarsAndTrains.Classes.Vehicle
 {

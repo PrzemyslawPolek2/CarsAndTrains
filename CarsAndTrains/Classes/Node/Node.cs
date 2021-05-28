@@ -6,15 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CarsAndTrains
+namespace CarsAndTrains.Classes.Node
 {
     class Node
     {
+        #region Fields
+            public bool CanGoThrough { get; set; }
+            protected Point Position { get; set; }
+            private bool isActive;
+        #endregion
 
-        public bool CanGoThrough { get; set; }
-        protected Point Position { get; set; }
-        private bool isActive;
-
+        #region Getter_Setter
         public bool IsActive
         {
             get { return isActive; }
@@ -22,7 +24,9 @@ namespace CarsAndTrains
         }
 
         public PositionVector Vector { get; private set; }
+        #endregion
 
+        #region Constructors
         public Node()
         {
 
@@ -37,7 +41,9 @@ namespace CarsAndTrains
         {
             return Position;
         }
+        #endregion
 
+        #region Methods
         private void CalculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
         {
             double xVector, yVector, finalVector;
@@ -60,7 +66,7 @@ namespace CarsAndTrains
             };
             Vector.SetNormalized(normalizedPosition.X, normalizedPosition.Y);
         }
-
+        #endregion
 
     }
 }
