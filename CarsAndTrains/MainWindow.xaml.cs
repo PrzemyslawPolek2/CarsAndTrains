@@ -1,4 +1,5 @@
 ﻿using CarsAndTrains.Classes;
+using CarsAndTrains.Classes.Controllers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ namespace CarsAndTrains
     {
         private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
         public static MainWindow GetMain;
-        public static bool CreateNode;
+        public static bool CreateNode = true;
         
         public MainWindow()
         {
@@ -33,11 +34,13 @@ namespace CarsAndTrains
             InitializeComponent();
             PublicAvaliableReferences.Initialize(canvas);
             clickPositionL.Content = "[" + GetMain.GetCanvasHeight() + ";" + GetMain.GetCanvasWidth() + "]";
-            Thread thread =
-            new Thread(
-              _ => MoveFakeCar(exampleCar, new Point(1, 0))
-            );
-            thread.Start();
+            //StartThreads();
+        }
+
+        private async static void StartThreads()
+        {
+            CarsController carsController = new CarsController();
+            carsController.Start();
         }
 
         private void CanvasMouseDownEventHandler(object sender, MouseButtonEventArgs e)
@@ -50,6 +53,23 @@ namespace CarsAndTrains
             if (!CreateNode)
                 return;
             CreateNodePosition(str);
+            Ellipse ellipse = new Ellipse
+            {
+                Width = 20,
+                Height = 20,
+                Fill = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255,
+                                                   128,
+                                                   255,
+                                                   0)
+                }
+            };
+
+            Canvas.SetLeft(ellipse, p.X);
+            Canvas.SetTop(ellipse, p.Y);
+            Panel.SetZIndex(ellipse, 5);
+            canvas.Children.Add(ellipse);
         }
 
         private static void CreateNodePosition(string str)
@@ -82,7 +102,7 @@ namespace CarsAndTrains
             return canvas.Height;
         }
 
-        private void MoveFakeCar(UIElement movedObject, Point movementVector)
+        private void MoveCars(UIElement movedObject, Point movementVector)
         {
             double xMovement = movementVector.X;
             double yMovement = movementVector.Y;

@@ -1,6 +1,7 @@
 ﻿using CarsAndTrains.Classes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,9 +45,10 @@ namespace CarsAndTrains.Classes.Node
         #endregion
 
         #region Methods
-        private void CalculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
+        public void CalculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
         {
             double xVector, yVector, finalVector;
+
 
             //Długość wektora jest obliczana ze wzoru |AB| = PIERWIASTEK[(Xb - Xa)^2 + (Yb - Ya)^2]
             //gdzie B oznacza Node wysłany jako parametr funkcji, zaś A - this.Node
@@ -59,11 +61,15 @@ namespace CarsAndTrains.Classes.Node
 
             Vector = new PositionVector(Position.X, Position.Y, finalVector);
 
+            xVector = nextNode.Position.X - this.Position.X;
+            yVector = nextNode.Position.Y - this.Position.Y;
+
             Point normalizedPosition = new Point
             {
                 X = xVector / finalVector,
                 Y = yVector / finalVector
             };
+            //Debug.WriteLine($"Calculating Norm: <{this.Position.X} {this.Position.Y}> => <{nextNode.Position.X} {nextNode.Position.Y}> = {normalizedPosition.X} {normalizedPosition.Y}");
             Vector.SetNormalized(normalizedPosition.X, normalizedPosition.Y);
         }
         #endregion

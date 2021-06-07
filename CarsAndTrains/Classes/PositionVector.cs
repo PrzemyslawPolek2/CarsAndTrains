@@ -25,8 +25,6 @@ namespace CarsAndTrains.Classes
             this.Length = length;
         }
 
-
-
         public void SetNormalized(double normalizedX, double normalizedY)
         {
             this.NormalizedX = normalizedX;

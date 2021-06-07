@@ -55,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\Controllers\CarsController.cs" />
+    <Compile Include="Classes\Controllers\Controller.cs" />
     <Compile Include="Classes\Node\Turnpike.cs" />
     <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
@@ -108,9 +110,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Map\map.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\Cars\Blue\blue_car_left.png" />
   </ItemGroup>

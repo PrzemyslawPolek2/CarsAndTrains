@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using CarsAndTrains.Classes;
 using CarsAndTrains.Classes.Node;
@@ -8,7 +9,7 @@ namespace CarsAndTrains.Classes.Vehicle
 {
     public abstract class Vehicle
     {
-        private const double OFFSET = 15;
+        private const double OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
         public bool CanColiding { get; set; }
@@ -21,11 +22,24 @@ namespace CarsAndTrains.Classes.Vehicle
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
         public int NextVehicleIndex { get; protected set; }
+        public double CurrentSpeed { 
+            get => currentSpeed; 
+            set => LimitSpeed(value); }
+
+        protected void LimitSpeed(double value)
+        {
+            currentSpeed = value;
+            if (currentSpeed > VehicleSpeed)
+                currentSpeed = VehicleSpeed;
+            if (currentSpeed < 0)
+                currentSpeed = 0;
+        }
+
+        public string CurrentGraphics { get; protected set; }
         #endregion
         #region private fields
-        private double currentSpeed;
         private PositionVector positionVector;
-        private string currentGraphics;
+        private double currentSpeed;
         #endregion
         #region public constructors
         public Vehicle()
@@ -42,6 +56,7 @@ namespace CarsAndTrains.Classes.Vehicle
             this.CounterNodes = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
+            this.positionVector = PublicAvaliableReferences.GetNextNode(CounterNodes).Vector;
         }
 
         #endregion
@@ -71,7 +86,7 @@ namespace CarsAndTrains.Classes.Vehicle
         }
         #endregion
         #region protected methods
-        protected void GetNewGraphic() => this.currentGraphics = PublicAvaliableReferences.GetNextGraphic();
+        protected void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
 
         #endregion
         #region private methods
@@ -81,19 +96,26 @@ namespace CarsAndTrains.Classes.Vehicle
             {
                 CounterNodes = CounterNodes - 1;
                 nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);
+                if (nextNode is TrainTriggerNode node)
+                    node.TriggerTurnpike();
+
                 positionVector = nextNode.Vector;
                 if (nextNode.CanGoThrough)
-                    currentGraphics = PublicAvaliableReferences.GetNextGraphic();
+                    CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
             }
 
             return nextNode;
         }
         private void MoveVehicleBeetweenNodes()
         {
-            if (positionVector.Length < currentSpeed)
-                currentSpeed = currentSpeed - positionVector.Length;
-            ActualPosition = new Point(ActualPosition.X * currentSpeed, ActualPosition.Y * currentSpeed);
-            TraveledDistance = TraveledDistance + currentSpeed;
+            if (positionVector.Length < CurrentSpeed)
+                CurrentSpeed = CurrentSpeed - positionVector.Length;
+            ActualPosition = new Point(
+                ActualPosition.X + (CurrentSpeed * positionVector.NormalizedX), 
+                ActualPosition.Y + (CurrentSpeed * positionVector.NormalizedY)
+                );
+
+            TraveledDistance = TraveledDistance + CurrentSpeed;
         }
 
         private void SpeedControlBasedOnNextVehicle()
@@ -101,9 +123,9 @@ namespace CarsAndTrains.Classes.Vehicle
             if (PublicAvaliableReferences.VehiclesExistOnPath(this))
             {
                 if (PublicAvaliableReferences.IsVehicleInTheWay(this))
-                    this.currentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this);
+                    this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
                 else
-                    this.currentSpeed = this.VehicleSpeed;
+                    this.CurrentSpeed = this.VehicleSpeed;
             }
         }
 

@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CarsAndTrains"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="600">
+        Title="MainWindow" Height="800" Width="1000">
     <Grid Margin="0,0,2,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <Canvas x:Name="canvas" Height="400" Width="535" Margin="16,40,6,29" MouseDown="CanvasMouseDownEventHandler" Grid.RowSpan="2">
+        <Canvas x:Name="canvas" Height="600" Width="800" Margin="20" MouseDown="CanvasMouseDownEventHandler" Grid.RowSpan="2">
             <Image x:Name="exampleCar" Source="/Resources/Images/Cars/blue_car_sideways.png" Canvas.Top="120" Canvas.Left="6" Width="30" Height="20" Panel.ZIndex="5"></Image>
-            <Image Source="/Resources/Images/Map/map.png" Height="400" Width="535" Panel.ZIndex="0"></Image>
+            <Image Source="/Resources/Images/Map/map.png" Height="600" Width="800" Panel.ZIndex="0"></Image>
         </Canvas>
         <Label x:Name="clickPositionL" Content="Label" HorizontalAlignment="Left" Height="40" Margin="10,10,0,0" VerticalAlignment="Top" Width="535" Grid.Row="1"/>
     </Grid>

@@ -17,15 +17,15 @@ namespace CarsAndTrains.Classes.Vehicle
 
         }
 
-        public Car(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime) : base(VehicleSpeed,
+        public Car(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : base(VehicleSpeed,
                                                                                           CounterNodes,
-                                                                                          DeathAfterArivalTime)
+                                                                                          DeathAfterArivalTime, NextVehicleIndex)
         {
 
         }
         public override void UpdateVehicle()
         {
-            throw new NotImplementedException();
+            base.UpdateVehicle();
         }
 
     }
