@@ -24,10 +24,10 @@ namespace CarsAndTrains.Classes.Nodes
         #region Constructors
         public Node()
         {
-
+            CanGoThrough = true;
         }
 
-        public Node(Point position)
+        public Node(Point position) : this()
         {
             this.Position = position;
         }
@@ -63,7 +63,6 @@ namespace CarsAndTrains.Classes.Nodes
                 X = xVector / finalVector,
                 Y = yVector / finalVector
             };
-            //Debug.WriteLine($"Calculating Norm: <{this.Position.X} {this.Position.Y}> => <{nextNode.Position.X} {nextNode.Position.Y}> = {normalizedPosition.X} {normalizedPosition.Y}");
             Vector.SetNormalized(normalizedPosition.X, normalizedPosition.Y);
         }
         #endregion

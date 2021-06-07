@@ -2,6 +2,7 @@
 using CarsAndTrains.Classes.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -68,7 +69,7 @@ namespace CarsAndTrains.Classes
                     string[] values = s.Split(' ');
                     float xValue = float.Parse(values[0]);
                     float yValue = float.Parse(values[1]);
-                    carNodes.Add(new Nodes.Node(new Point(xValue, yValue)));
+                    carNodes.Add(new Node(new Point(xValue, yValue)));
                     if (!drawNodes)
                         continue;
 
@@ -95,9 +96,12 @@ namespace CarsAndTrains.Classes
 
             for (int i = 0; i < carNodes.Count; i++)
             {
-                Nodes.Node node = carNodes[i];
+                Node node = carNodes[i];
                 if (i + 1 >= carNodes.Count)
-                    node.CalculateVector(carNodes[0]);
+                {
+                    node.CanGoThrough = false;
+                    node.CalculateVector(carNodes[i]);
+                }
                 else
                     node.CalculateVector(carNodes[i + 1]);
 
@@ -139,12 +143,21 @@ namespace CarsAndTrains.Classes
             cars = new List<Car>();
             carsDrawings = new List<Rectangle>();
             Random random = new Random();
+            CarFactory.Initialize();
             for (int i = 0; i < LIMIT; i++)
             {
                 int nextIndex = i + 1 >= LIMIT ? -1 : i + 1;
 
                 Car car = CarFactory.CreateCar(nodesCount, nextIndex);
                 car.ActualPosition = carNodes[0].GetNodePosition();
+                if (i != 0)
+                {
+                    car.IsActive = false;
+                    car.CanColiding = false;
+                    car.IsVisible = false;
+                    car.CanMove = false;
+                    car.DeathAfterArivalTime = 100 * i;
+                }
 
                 cars.Add(car);
 
@@ -154,7 +167,7 @@ namespace CarsAndTrains.Classes
                     Height = 20,
                     Fill = new SolidColorBrush
                     {
-                        Color = Color.FromArgb(255,
+                        Color = Color.FromArgb(0,
                                                    (byte)random.Next(255),
                                                    (byte)random.Next(255),
                                                    (byte)random.Next(255))
@@ -181,6 +194,36 @@ namespace CarsAndTrains.Classes
                 for (int i = 0; i < cars.Count; i++)
                 {
                     Car car = cars[i];
+
+                    if (!car.IsVisible || !car.IsActive)
+                    {
+                        MainWindow.GetMain.Dispatcher.Invoke(() =>
+                        {
+                            carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0));
+                        });
+                    }
+                    else
+                    {
+                        MainWindow.GetMain.Dispatcher.Invoke(() =>
+                        {
+                            carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(255, 255, 255, 0));
+                        });
+                    }
+
+                    if (!car.IsActive)
+                    {
+                        car.DeathAfterArivalTime -= DEATH_TICK_VALUE;
+                        if (car.DeathAfterArivalTime <= 0.0f)
+                        {
+                            car.IsActive = true;
+                            car.CanColiding = true;
+                            car.IsVisible = true;
+                            car.CanMove = true;
+                        }
+
+                        continue;
+                    }
+
                     car.UpdateVehicle();
                     MainWindow.GetMain.Dispatcher.Invoke(() =>
                     {
@@ -218,6 +261,8 @@ namespace CarsAndTrains.Classes
         {
             lock (cars)
             {
+                if (nextVehicleIndex == -1)
+                    nextVehicleIndex = 0;
                 return cars[nextVehicleIndex].IsActive && cars[nextVehicleIndex].CanColiding && !cars[nextVehicleIndex].Arived();
             }
         }
@@ -225,8 +270,10 @@ namespace CarsAndTrains.Classes
         {
             lock (carNodes)
             {
+                if (nextVehicleIndex == -1)
+                    nextVehicleIndex = 0;
                 Vehicle nextCar = cars[nextVehicleIndex];
-                if (!cars[nextVehicleIndex].IsActive || !cars[nextVehicleIndex].CanColiding || cars[nextVehicleIndex].Arived())
+                if (!(!cars[nextVehicleIndex].IsActive || !cars[nextVehicleIndex].CanColiding || cars[nextVehicleIndex].Arived()))
                     return false;
 
                 double passedVehicleLimit = nextCar.TraveledDistance - nextCar.WidthGraphics / 2;
@@ -264,7 +311,11 @@ namespace CarsAndTrains.Classes
         {
             if (index == -1)
                 return 1f;
-            return 30f;//cars[index].CurrentGraphics;
+            lock (carsDrawings)
+            {
+                return carsDrawings[index].Width;
+            }
+            //cars[index].CurrentGraphics;
         }
 
         public static double GetNextVehicleSpeed(int index)

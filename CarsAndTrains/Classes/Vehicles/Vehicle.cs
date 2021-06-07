@@ -1,10 +1,13 @@
 ﻿using CarsAndTrains.Classes.Nodes;
+using System.Diagnostics;
 using System.Windows;
 
 namespace CarsAndTrains.Classes.Vehicles
 {
     public abstract class Vehicle
     {
+        private static int CarID = 0;
+        private int carID = 0;
         private const double OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
@@ -36,8 +39,8 @@ namespace CarsAndTrains.Classes.Vehicles
         public string CurrentGraphics { get; protected set; }
         #endregion
         #region private fields
+        protected double currentSpeed;
         private PositionVector positionVector;
-        private double currentSpeed;
         #endregion
         #region public constructors
         public Vehicle()
@@ -46,9 +49,11 @@ namespace CarsAndTrains.Classes.Vehicles
             CanColiding = true;
             IsVisible = true;
             IsActive = true;
+            carID = CarID;
+            CarID++;
         }
 
-        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : this() //Car
+        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : this()
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
@@ -65,7 +70,7 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
 
-            if (!CanMove | !nextNode.CanGoThrough)
+            if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
             if (CanColiding)
@@ -78,9 +83,8 @@ namespace CarsAndTrains.Classes.Vehicles
             _ = DidArriveToNode(nextNode);
 
             if (CounterNodes == 0)
-            {
                 EmptiedNodesAction();
-            }
+
         }
         #endregion
         #region protected methods
@@ -88,18 +92,20 @@ namespace CarsAndTrains.Classes.Vehicles
 
         #endregion
         #region private methods
-        private Nodes.Node DidArriveToNode(Nodes.Node nextNode)
+        private Node DidArriveToNode(Node nextNode)
         {
             if ((this.positionVector.Length - TraveledDistance) <= OFFSET)
             {
                 CounterNodes--;
                 nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
+                Debug.WriteLine($"{carID}|{positionVector.NormalizedX} {positionVector.NormalizedY}");
                 if (nextNode is TrainTriggerNode node)
                     node.TriggerTurnpike();
 
                 this.positionVector = nextNode.Vector;
                 if (nextNode.CanGoThrough)
                     CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
+                TraveledDistance = 0;
             }
             return nextNode;
         }
@@ -117,13 +123,13 @@ namespace CarsAndTrains.Classes.Vehicles
 
         private void SpeedControlBasedOnNextVehicle()
         {
-            if (PublicAvaliableReferences.VehiclesExistOnPath(this.NextVehicleIndex))
-            {
-                if (PublicAvaliableReferences.IsVehicleInTheWay(this.NextVehicleIndex, this))
-                    this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
-                else
-                    this.CurrentSpeed = this.VehicleSpeed;
-            }
+            if (!PublicAvaliableReferences.VehiclesExistOnPath(this.NextVehicleIndex))
+                return;
+
+            if (PublicAvaliableReferences.IsVehicleInTheWay(this.NextVehicleIndex, this))
+                this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
+            else
+                this.CurrentSpeed = this.VehicleSpeed;
         }
 
         public bool Arived() => CounterNodes == 0;
