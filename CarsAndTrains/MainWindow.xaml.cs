@@ -17,7 +17,6 @@ namespace CarsAndTrains
         private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
         public static MainWindow GetMain;
         public static bool CreateNode = false;
-
         public MainWindow()
         {
             GetMain = this;
@@ -55,7 +54,6 @@ namespace CarsAndTrains
                                                    0)
                 }
             };
-
             Canvas.SetLeft(ellipse, p.X);
             Canvas.SetTop(ellipse, p.Y);
             Panel.SetZIndex(ellipse, 5);

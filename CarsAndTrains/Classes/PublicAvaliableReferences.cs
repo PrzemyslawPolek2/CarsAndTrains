@@ -146,7 +146,7 @@ namespace CarsAndTrains.Classes
             CarFactory.Initialize();
             for (int i = 0; i < LIMIT; i++)
             {
-                int nextIndex = i + 1 >= LIMIT ? -1 : i + 1;
+                int nextIndex = i - 1 < 0 ? -1 : i - 1;
 
                 Car car = CarFactory.CreateCar(nodesCount, nextIndex);
                 car.ActualPosition = carNodes[0].GetNodePosition();
@@ -195,20 +195,10 @@ namespace CarsAndTrains.Classes
                 {
                     Car car = cars[i];
 
-                    if (!car.IsVisible || !car.IsActive)
-                    {
-                        MainWindow.GetMain.Dispatcher.Invoke(() =>
-                        {
-                            carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0));
-                        });
-                    }
-                    else
-                    {
-                        MainWindow.GetMain.Dispatcher.Invoke(() =>
-                        {
-                            carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(255, 255, 255, 0));
-                        });
-                    }
+                    //if (!car.IsVisible)
+                    //    MainWindow.GetMain.Dispatcher.Invoke(() => carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(0, 255, 0, 0)));
+                    //else
+                    //    MainWindow.GetMain.Dispatcher.Invoke(() => carsDrawings[i].Fill = new SolidColorBrush(Color.FromArgb(255, 255, 255, 0)));
 
                     if (!car.IsActive)
                     {
@@ -219,6 +209,7 @@ namespace CarsAndTrains.Classes
                             car.CanColiding = true;
                             car.IsVisible = true;
                             car.CanMove = true;
+                            GetNextGraphic(car.carID);
                         }
 
                         continue;
@@ -299,10 +290,21 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static string GetNextGraphic()
+        public static string GetNextGraphic(int currentCar)
         {
             lock (vehicleGraphicsURL)
             {
+                Random random = new Random();
+                MainWindow.GetMain.Dispatcher.Invoke(() =>
+                {
+                    carsDrawings[currentCar].Fill = new SolidColorBrush
+                    {
+                        Color = Color.FromArgb(255,
+                                                   (byte)random.Next(255),
+                                                   (byte)random.Next(255),
+                                                   (byte)random.Next(255))
+                    };
+                });
                 return vehicleGraphicsURL[0];
             }
         }

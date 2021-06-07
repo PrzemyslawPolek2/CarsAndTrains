@@ -7,7 +7,7 @@ namespace CarsAndTrains.Classes.Vehicles
     public abstract class Vehicle
     {
         private static int CarID = 0;
-        private int carID = 0;
+        public int carID = 0;
         private const double OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
@@ -88,7 +88,7 @@ namespace CarsAndTrains.Classes.Vehicles
         }
         #endregion
         #region protected methods
-        protected void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
+        protected void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(this.carID);
 
         #endregion
         #region private methods
@@ -101,10 +101,10 @@ namespace CarsAndTrains.Classes.Vehicles
                 Debug.WriteLine($"{carID}|{positionVector.NormalizedX} {positionVector.NormalizedY}");
                 if (nextNode is TrainTriggerNode node)
                     node.TriggerTurnpike();
-
+                GetNewGraphic();
                 this.positionVector = nextNode.Vector;
-                if (nextNode.CanGoThrough)
-                    CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
+                /*if (nextNode.CanGoThrough)
+                    CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(this.carID);*/
                 TraveledDistance = 0;
             }
             return nextNode;
