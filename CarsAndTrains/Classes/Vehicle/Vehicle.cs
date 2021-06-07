@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
-using System.Runtime;
 using CarsAndTrains.Classes;
 using CarsAndTrains.Classes.Node;
+using CarsAndTrains.Classes.Vehicle;
 
 namespace CarsAndTrains.Classes.Vehicle
 {
@@ -33,21 +28,20 @@ namespace CarsAndTrains.Classes.Vehicle
         private string currentGraphics;
         #endregion
         #region public constructors
-        public Vehicle() 
-        { 
-        
-        }
-
-        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) //Car
+        public Vehicle()
         {
-            this.VehicleSpeed = VehicleSpeed;
-            this.CounterNodes = CounterNodes;
-            this.DeathAfterArivalTime = DeathAfterArivalTime;
-           
             CanMove = true;
             CanColiding = true;
             IsVisible = true;
             IsActive = true;
+        }
+
+        public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : this() //Car
+        {
+            this.VehicleSpeed = VehicleSpeed;
+            this.CounterNodes = CounterNodes;
+            this.DeathAfterArivalTime = DeathAfterArivalTime;
+            this.NextVehicleIndex = NextVehicleIndex;
         }
 
         #endregion
@@ -77,10 +71,8 @@ namespace CarsAndTrains.Classes.Vehicle
         }
         #endregion
         #region protected methods
-        protected void GetNewGraphic() //póxniej, czyli jak będą grafiki
-        {
-            throw new NotImplementedException();
-        }
+        protected void GetNewGraphic() => this.currentGraphics = PublicAvaliableReferences.GetNextGraphic();
+
         #endregion
         #region private methods
         private Node.Node DidArriveToNode(Node.Node nextNode)

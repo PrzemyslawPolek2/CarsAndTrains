@@ -59,6 +59,7 @@
     <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
     <Compile Include="Classes\Vehicle\Car.cs" />
+    <Compile Include="Classes\Vehicle\CarFactory.cs" />
     <Compile Include="Classes\Vehicle\Train.cs" />
     <Compile Include="Classes\Vehicle\Vehicle.cs" />
     <Page Include="MainWindow.xaml">
