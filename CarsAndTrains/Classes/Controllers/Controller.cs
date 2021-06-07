@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 
 namespace CarsAndTrains.Classes.Controllers
 {
-    public abstract class Controller 
+    public abstract class Controller
     {
         private Thread _thread;
         public const int THREAD_TICK = 10;

@@ -1,20 +1,10 @@
 ﻿using CarsAndTrains.Classes;
 using CarsAndTrains.Classes.Controllers;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace CarsAndTrains
@@ -26,15 +16,15 @@ namespace CarsAndTrains
     {
         private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
         public static MainWindow GetMain;
-        public static bool CreateNode = true;
-        
+        public static bool CreateNode = false;
+
         public MainWindow()
         {
             GetMain = this;
             InitializeComponent();
             PublicAvaliableReferences.Initialize(canvas);
             clickPositionL.Content = "[" + GetMain.GetCanvasHeight() + ";" + GetMain.GetCanvasWidth() + "]";
-            //StartThreads();
+            StartThreads();
         }
 
         private async static void StartThreads()
@@ -100,22 +90,6 @@ namespace CarsAndTrains
         public double GetCanvasHeight()
         {
             return canvas.Height;
-        }
-
-        private void MoveCars(UIElement movedObject, Point movementVector)
-        {
-            double xMovement = movementVector.X;
-            double yMovement = movementVector.Y;
-            double speed = 1.0f;
-            for (int i = 0; i < 10000; i++)
-            {
-                this.Dispatcher.Invoke(() =>
-                {
-                    Canvas.SetLeft(movedObject, Canvas.GetLeft(movedObject) + speed * xMovement);
-                    Canvas.SetTop(movedObject, Canvas.GetTop(movedObject) + speed * yMovement);
-                });
-                Thread.Sleep(10);
-            }
         }
     }
 }

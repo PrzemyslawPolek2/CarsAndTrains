@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CarsAndTrains.Classes.Vehicle
+namespace CarsAndTrains.Classes.Vehicles
 {
     static class CarFactory
     {
@@ -16,7 +12,7 @@ namespace CarsAndTrains.Classes.Vehicle
 
         public static Car CreateCar(int nodesNumber, int NextVehicleIndex)
         {
-            Car car = new Car(RandomSpeedGenerator(),nodesNumber, RandomDeathGenerator(), NextVehicleIndex);
+            Car car = new Car(RandomSpeedGenerator(), nodesNumber, RandomDeathGenerator(), NextVehicleIndex);
             return car;
         }
 

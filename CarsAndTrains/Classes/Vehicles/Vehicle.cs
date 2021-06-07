@@ -1,11 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using CarsAndTrains.Classes.Nodes;
 using System.Windows;
-using CarsAndTrains.Classes;
-using CarsAndTrains.Classes.Node;
-using CarsAndTrains.Classes.Vehicle;
 
-namespace CarsAndTrains.Classes.Vehicle
+namespace CarsAndTrains.Classes.Vehicles
 {
     public abstract class Vehicle
     {
@@ -22,9 +18,11 @@ namespace CarsAndTrains.Classes.Vehicle
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
         public int NextVehicleIndex { get; protected set; }
-        public double CurrentSpeed { 
-            get => currentSpeed; 
-            set => LimitSpeed(value); }
+        public double CurrentSpeed
+        {
+            get => currentSpeed;
+            set => LimitSpeed(value);
+        }
 
         protected void LimitSpeed(double value)
         {
@@ -56,7 +54,7 @@ namespace CarsAndTrains.Classes.Vehicle
             this.CounterNodes = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
-            this.positionVector = PublicAvaliableReferences.GetNextNode(CounterNodes).Vector;
+            this.positionVector = PublicAvaliableReferences.GetNode(CounterNodes).Vector;
         }
 
         #endregion
@@ -65,9 +63,9 @@ namespace CarsAndTrains.Classes.Vehicle
         #region public methods
         public virtual void UpdateVehicle()
         {
-            Node.Node nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
+            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
 
-            if (!CanMove | nextNode.CanGoThrough)
+            if (!CanMove | !nextNode.CanGoThrough)
                 return;
 
             if (CanColiding)
@@ -77,7 +75,7 @@ namespace CarsAndTrains.Classes.Vehicle
             //przesuwanie vehicle miedzy nodami
             MoveVehicleBeetweenNodes();
             //sprawdzanie czy dojechal do node
-            nextNode = DidArriveToNode(nextNode);
+            _ = DidArriveToNode(nextNode);
 
             if (CounterNodes == 0)
             {
@@ -90,29 +88,28 @@ namespace CarsAndTrains.Classes.Vehicle
 
         #endregion
         #region private methods
-        private Node.Node DidArriveToNode(Node.Node nextNode)
+        private Nodes.Node DidArriveToNode(Nodes.Node nextNode)
         {
-            if (positionVector.Length - TraveledDistance <= OFFSET)
+            if ((this.positionVector.Length - TraveledDistance) <= OFFSET)
             {
-                CounterNodes = CounterNodes - 1;
-                nextNode = PublicAvaliableReferences.GetNextNode(CounterNodes);
+                CounterNodes--;
+                nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
                 if (nextNode is TrainTriggerNode node)
                     node.TriggerTurnpike();
 
-                positionVector = nextNode.Vector;
+                this.positionVector = nextNode.Vector;
                 if (nextNode.CanGoThrough)
                     CurrentGraphics = PublicAvaliableReferences.GetNextGraphic();
             }
-
             return nextNode;
         }
         private void MoveVehicleBeetweenNodes()
         {
-            if (positionVector.Length < CurrentSpeed)
-                CurrentSpeed = CurrentSpeed - positionVector.Length;
+            if (this.positionVector.Length < CurrentSpeed)
+                CurrentSpeed = CurrentSpeed - this.positionVector.Length;
             ActualPosition = new Point(
-                ActualPosition.X + (CurrentSpeed * positionVector.NormalizedX), 
-                ActualPosition.Y + (CurrentSpeed * positionVector.NormalizedY)
+                ActualPosition.X + (CurrentSpeed * this.positionVector.NormalizedX),
+                ActualPosition.Y + (CurrentSpeed * this.positionVector.NormalizedY)
                 );
 
             TraveledDistance = TraveledDistance + CurrentSpeed;
@@ -120,9 +117,9 @@ namespace CarsAndTrains.Classes.Vehicle
 
         private void SpeedControlBasedOnNextVehicle()
         {
-            if (PublicAvaliableReferences.VehiclesExistOnPath(this))
+            if (PublicAvaliableReferences.VehiclesExistOnPath(this.NextVehicleIndex))
             {
-                if (PublicAvaliableReferences.IsVehicleInTheWay(this))
+                if (PublicAvaliableReferences.IsVehicleInTheWay(this.NextVehicleIndex, this))
                     this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
                 else
                     this.CurrentSpeed = this.VehicleSpeed;

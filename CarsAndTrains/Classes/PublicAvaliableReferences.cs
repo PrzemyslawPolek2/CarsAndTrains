@@ -1,12 +1,15 @@
-﻿using System;
+﻿using CarsAndTrains.Classes.Nodes;
+using CarsAndTrains.Classes.Vehicles;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.IO;
-using CarsAndTrains.Classes.Vehicle;
 
 namespace CarsAndTrains.Classes
 {
@@ -15,8 +18,8 @@ namespace CarsAndTrains.Classes
         protected static List<Train> trains;
         protected static List<Car> cars;
         protected static List<Rectangle> carsDrawings;
-        protected static List<Node.Node> carNodes;
-        protected static List<Node.Node> trainNodes;
+        protected static List<Node> carNodes;
+        protected static List<Node> trainNodes;
 
         protected static string[] vehicleGraphicsURL = new string[8];
         protected static string[] trainGraphicsURL = new string[8];
@@ -52,9 +55,11 @@ namespace CarsAndTrains.Classes
         private static void CreateNodes()
         {
             if (carNodes is null)
-                carNodes = new List<Node.Node>();
+                carNodes = new List<Node>();
+
             string path = System.Reflection.Assembly.GetEntryAssembly().Location;
             path = System.IO.Path.GetDirectoryName(path) + "/nodePositions.txt";
+
             using (StreamReader sr = File.OpenText(path))
             {
                 string s = "";
@@ -63,7 +68,7 @@ namespace CarsAndTrains.Classes
                     string[] values = s.Split(' ');
                     float xValue = float.Parse(values[0]);
                     float yValue = float.Parse(values[1]);
-                    carNodes.Add(new Node.Node(new Point(xValue, yValue)));
+                    carNodes.Add(new Nodes.Node(new Point(xValue, yValue)));
                     if (!drawNodes)
                         continue;
 
@@ -80,9 +85,6 @@ namespace CarsAndTrains.Classes
                         }
                     };
 
-                    
-
-
                     Canvas.SetLeft(ellipse, xValue);
                     Canvas.SetTop(ellipse, yValue);
 
@@ -93,11 +95,15 @@ namespace CarsAndTrains.Classes
 
             for (int i = 0; i < carNodes.Count; i++)
             {
-                Node.Node node = carNodes[i];
+                Nodes.Node node = carNodes[i];
                 if (i + 1 >= carNodes.Count)
                     node.CalculateVector(carNodes[0]);
                 else
                     node.CalculateVector(carNodes[i + 1]);
+
+                if (!drawNodes)
+                    continue;
+
                 TextBlock nodeNumber = new TextBlock()
                 {
                     Text = $"{node.Vector.NormalizedX.ToString("0.00")} {node.Vector.NormalizedY.ToString("0.00")}",
@@ -139,6 +145,7 @@ namespace CarsAndTrains.Classes
 
                 Car car = CarFactory.CreateCar(nodesCount, nextIndex);
                 car.ActualPosition = carNodes[0].GetNodePosition();
+
                 cars.Add(car);
 
                 Rectangle carRectangle = new Rectangle
@@ -166,7 +173,7 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static void UpdateAllVehicles()
+        public static void UpdateAllCars()
         {
             lock (cars)
             {
@@ -195,8 +202,6 @@ namespace CarsAndTrains.Classes
                     {
                         allCarsArrived = false;
                     }
-
-
                 }
 
                 IsFinished = allCarsArrived;
@@ -209,48 +214,31 @@ namespace CarsAndTrains.Classes
             //Vehicle vehicle;
         }
 
-        public static bool VehiclesExistOnPath(Vehicle.Vehicle passedVehicle)
+        public static bool VehiclesExistOnPath(int nextVehicleIndex)
+        {
+            lock (cars)
+            {
+                return cars[nextVehicleIndex].IsActive && cars[nextVehicleIndex].CanColiding && !cars[nextVehicleIndex].Arived();
+            }
+        }
+        public static bool IsVehicleInTheWay(int nextVehicleIndex, Vehicle car)
         {
             lock (carNodes)
             {
-                foreach (Vehicle.Vehicle vehicle in cars)
-                {
-                    if (vehicle == passedVehicle)
-                        continue;
+                Vehicle nextCar = cars[nextVehicleIndex];
+                if (!cars[nextVehicleIndex].IsActive || !cars[nextVehicleIndex].CanColiding || cars[nextVehicleIndex].Arived())
+                    return false;
 
-                    if (vehicle.CounterNodes == passedVehicle.CounterNodes)
-                        return true;
-                }
-                return false;
-            }
-        }
-        public static bool IsVehicleInTheWay(Vehicle.Vehicle passedVehicle)
-        {
-            lock (carNodes)
-            {
-                foreach (Vehicle.Vehicle vehicle in cars)
-                {
-                    if (vehicle == passedVehicle)
-                        continue;
+                double passedVehicleLimit = nextCar.TraveledDistance - nextCar.WidthGraphics / 2;
+                double thisVehicleBack = car.TraveledDistance - car.WidthGraphics / 2;
 
-                    if (vehicle.CounterNodes != passedVehicle.CounterNodes)
-                        continue;
-
-                    double thisVehicleBack = vehicle.TraveledDistance - vehicle.WidthGraphics / 2;
-                    double passedVehicleLimit = passedVehicle.TraveledDistance - passedVehicle.WidthGraphics / 2;
-                    if (passedVehicleLimit > thisVehicleBack)
-                        continue;
-                    passedVehicleLimit += passedVehicle.WidthGraphics;
-                    if (passedVehicleLimit >= thisVehicleBack)
-                        return true;
-                    else
-                        continue;
-                }
-                return false;
+                if (passedVehicleLimit > thisVehicleBack)
+                    return false;
+                return true;
             }
         }
 
-        public static Node.Node GetNextNode(int rawCurrentlyUsedNode)
+        public static Node GetNode(int rawCurrentlyUsedNode)
         {
             lock (carNodes)
             {

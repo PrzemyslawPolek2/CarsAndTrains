@@ -1,20 +1,14 @@
-﻿using CarsAndTrains.Classes;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
 
-namespace CarsAndTrains.Classes.Node
+namespace CarsAndTrains.Classes.Nodes
 {
-    class Node
+    public class Node
     {
         #region Fields
-            public bool CanGoThrough { get; set; }
-            protected Point Position { get; set; }
-            private bool isActive;
+        public bool CanGoThrough { get; set; }
+        protected Point Position { get; set; }
+        private bool isActive;
         #endregion
 
         #region Getter_Setter

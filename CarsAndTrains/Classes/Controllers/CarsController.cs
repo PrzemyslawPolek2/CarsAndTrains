@@ -10,7 +10,7 @@ namespace CarsAndTrains.Classes.Controllers
             do
             {
                 Debug.WriteLine("Running Update");
-                PublicAvaliableReferences.UpdateAllVehicles();
+                PublicAvaliableReferences.UpdateAllCars();
                 Thread.Sleep(THREAD_TICK);
             } while (!PublicAvaliableReferences.IsFinished);
 

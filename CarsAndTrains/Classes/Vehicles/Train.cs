@@ -1,13 +1,6 @@
-﻿using CarsAndTrains;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System;
 
-namespace CarsAndTrains.Classes.Vehicle
+namespace CarsAndTrains.Classes.Vehicles
 {
     public class Train : Vehicle
     {

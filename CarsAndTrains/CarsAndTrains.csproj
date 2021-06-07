@@ -57,13 +57,13 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\CarsController.cs" />
     <Compile Include="Classes\Controllers\Controller.cs" />
-    <Compile Include="Classes\Node\Turnpike.cs" />
+    <Compile Include="Classes\Nodes\Turnpike.cs" />
     <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
-    <Compile Include="Classes\Vehicle\Car.cs" />
-    <Compile Include="Classes\Vehicle\CarFactory.cs" />
-    <Compile Include="Classes\Vehicle\Train.cs" />
-    <Compile Include="Classes\Vehicle\Vehicle.cs" />
+    <Compile Include="Classes\Vehicles\Car.cs" />
+    <Compile Include="Classes\Vehicles\CarFactory.cs" />
+    <Compile Include="Classes\Vehicles\Train.cs" />
+    <Compile Include="Classes\Vehicles\Vehicle.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -79,9 +79,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Node\Light.cs" />
-    <Compile Include="Classes\Node\Node.cs" />
-    <Compile Include="Classes\Node\TrainTriggerNode.cs" />
+    <Compile Include="Classes\Nodes\Light.cs" />
+    <Compile Include="Classes\Nodes\Node.cs" />
+    <Compile Include="Classes\Nodes\TrainTriggerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

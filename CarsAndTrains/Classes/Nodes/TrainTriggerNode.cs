@@ -1,11 +1,6 @@
-﻿using CarsAndTrains.Classes.Node;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace CarsAndTrains.Classes.Node
+namespace CarsAndTrains.Classes.Nodes
 {
     class TrainTriggerNode : Node
     {
