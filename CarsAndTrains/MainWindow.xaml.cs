@@ -31,22 +31,29 @@ namespace CarsAndTrains
             if (CreateNode)
                 return;
             PublicAvaliableReferences.Initialize(canvas);
-            //StartThreads();
+            CreateThreads();
+            StartThreads();
             this.Closing += MainWindow_Closing;
         }
 
+        private static void CreateThreads()
+        {
+            threads = new List<Controller>
+            {
+                new CarsController(),
+                new TrainController()
+            };
+        }
 
         private static void AbortThreads()
         {
-            for (int i = 0; i < threads.Count; i++)
-                threads[i].Abort();
+            foreach (Controller controller in threads)
+                controller.Abort();
         }
         private static void StartThreads()
         {
-            threads = new List<Controller>();
-            CarsController carsController = new CarsController();
-            threads.Add(carsController);
-            carsController.Start();
+            foreach (Controller controller in threads)
+                controller.Start();
         }
         private void CanvasRightMouseDownEventHandler(object sender, MouseButtonEventArgs e)
         {

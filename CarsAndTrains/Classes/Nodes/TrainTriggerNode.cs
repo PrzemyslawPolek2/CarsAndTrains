@@ -5,16 +5,11 @@ namespace CarsAndTrains.Classes.Nodes
 {
     class TrainTriggerNode : Node
     {
-
         #region Constructors
-        public TrainTriggerNode()
-        {
 
-        }
-
-        public TrainTriggerNode (Point position)
+        public TrainTriggerNode(Point position) : base(position)
         {
-            this.Position = position;
+            
         }
 
         #endregion

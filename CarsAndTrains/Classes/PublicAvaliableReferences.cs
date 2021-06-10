@@ -32,11 +32,13 @@ namespace CarsAndTrains.Classes
         protected static List<Node> trainNodes;
 
         protected static BitmapImage[] carsBitmaps = new BitmapImage[8];
-        protected static BitmapImage[] trainsBitmaps = new BitmapImage[2];
+        protected static BitmapImage[] trainsBitmaps = new BitmapImage[8];
 
 
         public const string CAR_NODES_FILE_NAME = "/nodePositions.txt";
         public const string TRAIN_NODES_FILE_NAME = "/trainNodesPositions.txt";
+        public const string CAR_RESOURCES_FOLDER = @"\Resources\Images\Cars\Blue\";
+
         public const float TICK_VALUE = 1.0f;
         public const int ALPHA_FULL = 255;
 
@@ -44,25 +46,29 @@ namespace CarsAndTrains.Classes
         private const int SPAWN_TRAIN_LIMIT = 1;
 
         private const float DEATH_TICK_VALUE = 1.0f;
-        private const int SPAWN_DELAY = 200;
+        private const int SPAWN_DELAY = 500;
         private const int VEHICLE_DIRECTIONS = 8;
         private static int railsNodeIndex = 11;
 
-        protected static bool drawNodes = true;
-        protected static bool drawCars = true;
-        protected static bool drawTrains = true;
+        private static bool drawNodes = true;
+        private static bool drawCars = true;
+        private static bool drawTrains = true;
+        private static bool invertedTrainRoute = false;
 
 
         private static readonly float[,] directions =
         {
-            {-0.25f, 0.25f, 0.75f, 1.0f}, // UP
-            {0.25f, 0.75f, 0.25f, 0.75f}, // UP_RIGHT
-            {0.75f, 1.0f, -0.25f, 0.25f}, // RIGHT
-            {0.25f, 0.75f, -0.25f, -0.75f}, // DOWN_RIGHT
-            {-0.25f, 0.25f, -0.75f, -1.0f}, // DOWN
-            {-0.25f, -0.75f, -0.25f, -0.75f}, // DOWN_LEFT
-            {-0.75f, -1.0f, -0.25f, 0.25f}, // LEFT
-            {-0.75f, -0.25f, 0.25f, 0.75f}, // UP_LEFT
+            // Y value goes higher the lower you are, so the Y value has to be inversed
+
+            //X-min      X-max      Y-min       Y-max
+            {-.50f,     .5f,       -.5f,       -1.0f},      // UP
+            {-.25f,    .00f,     -.25f,      -1.0f},        // UP_RIGHT
+            {-.00f,     -.5f,      .5f,      -0.5f},        // RIGHT
+            {-.75f,     .0f,     .25f,     1.0f},           // DOWN_RIGHT
+            {-.50f,     .5f,       .5f,      1.0f},         // DOWN
+            {.00f,     .75f,      .25f,     1.0f},          // DOWN_LEFT
+            {.50f,      .0f,       .5f,      -0.5f},        // LEFT
+            {.00f,      .75f,      -.25f,      -1.0f},      // UP_LEFT
         };
 
         public static bool IsCarPoolFinished { get; protected set; }
@@ -94,15 +100,15 @@ namespace CarsAndTrains.Classes
         private static void CreateBitmapImages()
         {
             //TODO: asign graphics
-            string path = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-            path += @"\Resources\Images\Cars\Blue\blue_car_left.png";
+            string path = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(Directory.GetCurrentDirectory()));
+            path += $"{CAR_RESOURCES_FOLDER}car_";
+            string fileExtension = ".png";
 
-            carsBitmaps[0] = new BitmapImage(new Uri(path));
-            carsBitmaps[1] = carsBitmaps[0];
-            carsBitmaps[2] = carsBitmaps[0];
-            carsBitmaps[3] = carsBitmaps[0];
-            carsBitmaps[4] = carsBitmaps[0];
-            carsBitmaps[5] = carsBitmaps[0];
+            for (int i = 0; i < VEHICLE_DIRECTIONS; i++)
+            {
+                carsBitmaps[i] = new BitmapImage(new Uri($"{path}{((int)Enums.GraphicDirection.RIGHT)}{fileExtension}"));
+                trainsBitmaps[i] = new BitmapImage(new Uri($"{path}{i}{fileExtension}"));
+            }
         }
 
         private static void CreateCarsNodes()
@@ -208,10 +214,10 @@ namespace CarsAndTrains.Classes
                         trainNodes.Add(trainNode);
                     }
 
-                    
+
                     if (!drawNodes)
                         continue;
-                    CreateNodeArt(xValue, yValue, 255, (byte)triggeringNode, 128);
+                    CreateNodeArt(xValue, yValue, 255, (byte)(triggeringNode * ALPHA_FULL), 128);
                 }
             }
 
@@ -237,15 +243,15 @@ namespace CarsAndTrains.Classes
             //Initialize car factory
             TrainFactory.Initialize();
 
-            for (int i = 0; i < SPAWN_CAR_LIMIT; i++)
+            for (int i = 0; i < SPAWN_TRAIN_LIMIT; i++)
             {
                 int nextIndex = i - 1 < 0 ? -1 : i - 1;
 
                 Train train = TrainFactory.Create(nodesCount, nextIndex);
                 //set first node as car's stariting position
-                train.ActualPosition = carNodes[0].GetNodePosition();
+                train.ActualPosition = trainNodes[0].GetNodePosition();
                 //assign first grahpic to the car
-                train.CurrentGraphics = carsBitmaps[(int)Enums.GraphicDirection.RIGHT];
+                train.CurrentGraphics = trainsBitmaps[(int)Enums.GraphicDirection.RIGHT];
 
                 if (i != 0)
                 {
@@ -262,18 +268,21 @@ namespace CarsAndTrains.Classes
                     Source = train.CurrentGraphics
                 };
 
-                MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train.ActualPosition));
 
                 Panel.SetZIndex(trainImage, 5);
                 canvas.Children.Add(trainImage);
-
                 trainsArt.Add(trainImage);
+
+                MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
             }
         }
 
         private static void CreateCarsPool()
         {
             int nodesCount = carNodes.Count();
+            if (nodesCount <= 0)
+                throw new Exception();
+
             cars = new List<Car>();
             carsArt = new List<Image>();
 
@@ -306,12 +315,11 @@ namespace CarsAndTrains.Classes
                     Source = car.CurrentGraphics
                 };
 
-
-                MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car.ActualPosition));
-
+                carsArt.Add(carImage);
                 Panel.SetZIndex(carImage, 5);
                 canvas.Children.Add(carImage);
-                carsArt.Add(carImage);
+
+                MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car));
             }
         }
 
@@ -321,88 +329,94 @@ namespace CarsAndTrains.Classes
 
         public static void UpdateAllTrains()
         {
-            lock (trains)
-            {
-                for (int i = 0; i < trains.Count; i++)
+            lock (trains) lock (trainsArt)
                 {
-                    Train train = trains[i];
-
-                    if (!train.IsActive)
+                    for (int i = 0; i < trains.Count; i++)
                     {
-                        ReverseTrainPath();
-                        ReincarnateVehicle(train);
-                        continue;
+                        Train train = trains[i];
+
+                        if (!train.IsActive)
+                        {
+                            train.EnableVehicle();
+                            train.IsActive = true;
+                            
+                            //ReincarnateVehicle(train);
+                            continue;
+                        }
+
+                        train.UpdateVehicle();
+                        if (!train.IsVisible)
+                            continue;
+
+                        MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
                     }
-
-                    train.UpdateVehicle();
-                    if (!train.IsVisible)
-                        continue;
-
-                    MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train.ActualPosition));
                 }
-            }
         }
 
-        private static Action UpdateOnCanvas(Image image, Point position)
+        private static Action UpdateOnCanvas(Image image, Vehicle vehicle)
         {
             return () =>
             {
-                Canvas.SetLeft(image, position.X);
-                Canvas.SetTop(image, position.Y);
+                image.Source = vehicle.CurrentGraphics;
+                Canvas.SetLeft(image, vehicle.ActualPosition.X);
+                Canvas.SetTop(image, vehicle.ActualPosition.Y);
             };
         }
 
-        private static void ReverseTrainPath()
+        public static void ReverseTrainPath(Train train)
         {
-            throw new NotImplementedException();
+            train.CounterNodes = trainNodes.Count;
+            invertedTrainRoute = !invertedTrainRoute;
         }
 
         private static void ReincarnateVehicle(Vehicle vehicle)
         {
+            vehicle.IsActive = true;
             vehicle.EnableVehicle();
             vehicle.GetNewGraphic();
         }
 
         public static void UpdateAllCars()
         {
-            lock (cars)
-            {
-                bool allCarsArrived = true;
-                for (int i = 0; i < cars.Count; i++)
+            lock (cars) lock (carsArt)
                 {
-                    Car car = cars[i];
-
-                    if (!car.IsActive)
+                    for (int i = 0; i < cars.Count; i++)
                     {
-                        car.DeathAfterArivalTime -= DEATH_TICK_VALUE;
-                        if (car.DeathAfterArivalTime <= 0.0f)
+                        Car car = cars[i];
+
+                        if (!car.IsActive)
                         {
-                            ReincarnateVehicle(car);
+                            car.DeathAfterArivalTime -= DEATH_TICK_VALUE;
+                            if (car.DeathAfterArivalTime <= 0.0f)
+                            {
+                                ReincarnateVehicle(car);
+                            }
+                            continue;
                         }
-                        continue;
+
+                        car.UpdateVehicle();
+
+
+                        if (!car.IsVisible)
+                            continue;
+
+                        MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car));
                     }
 
-                    car.UpdateVehicle();
-
-                    allCarsArrived = DidCarArrive(allCarsArrived, car);
-                    if (!car.IsVisible)
-                        continue;
-
-                    MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car.ActualPosition));
+                    IsCarPoolFinished = DidAllCarsArrive();
                 }
-
-                IsCarPoolFinished = allCarsArrived;
-            }
         }
 
         #endregion
 
-        private static bool DidCarArrive(bool allCarsArrived, Car car)
+        private static bool DidAllCarsArrive()
         {
-            if (!car.Arived())
-                allCarsArrived = false;
-
-            return allCarsArrived;
+            foreach (Vehicle vehicle in cars)
+            {
+                if (!vehicle.Arived())
+                    return false;
+            }
+            return true;
         }
 
         public static bool IsAnyVehicleInFront(Vehicle thisVehicle)
@@ -455,7 +469,7 @@ namespace CarsAndTrains.Classes
             return true;
         }
 
-        public static Node GetNode(int rawCurrentlyUsedNode)
+        public static Node GetCarNode(int rawCurrentlyUsedNode)
         {
             lock (carNodes)
             {
@@ -466,6 +480,21 @@ namespace CarsAndTrains.Classes
                     currentNodeIndex = carNodes.Count() - 1;
 
                 return carNodes[currentNodeIndex];
+            }
+        }
+
+        public static Node GetTrainNode(int rawCurrentlyUsedNode)
+        {
+            lock (trainNodes)
+            {
+                int currentNodeIndex = invertedTrainRoute ? trainNodes.Count() - rawCurrentlyUsedNode : rawCurrentlyUsedNode;
+
+                if (currentNodeIndex < 0)
+                    currentNodeIndex = 0;
+                if (currentNodeIndex > trainNodes.Count() - 1)
+                    currentNodeIndex = trainNodes.Count() - 1;
+
+                return trainNodes[currentNodeIndex];
             }
         }
 
@@ -485,7 +514,9 @@ namespace CarsAndTrains.Classes
                     selectedDirection = i;
                     break;
                 }
-
+                Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
+                Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
+                Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
                 return carsBitmaps[selectedDirection];
             }
         }
@@ -499,7 +530,9 @@ namespace CarsAndTrains.Classes
                 biggerLimit = temp;
             }
 
-            return (value >= smallerLimit && value < biggerLimit);
+            bool isInBetweenValues = (value >= smallerLimit & value <= biggerLimit);
+            Debug.WriteLine($"\t {smallerLimit} <= {value} <= {biggerLimit} == {isInBetweenValues}");
+            return isInBetweenValues;
         }
 
         public static double GetNextVehicleWidth(int index)

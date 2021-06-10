@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CarsAndTrains.Classes.Nodes;
+using System;
+using System.Diagnostics;
 
 namespace CarsAndTrains.Classes.Vehicles
 {
@@ -15,15 +17,53 @@ namespace CarsAndTrains.Classes.Vehicles
             this.CurrentSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
             this.NextVehicleIndex = NextVehicleIndex;
+
+            this.positionVector = PublicAvaliableReferences.GetTrainNode(CounterNodes).Vector;
+            DistanceToTravel = positionVector.Length;
+        }
+
+        public override void EnableVehicle()
+        {
+            CanColide = false;
+            CanMove = true;
+            IsActive = true;
+            IsVisible = true;
         }
 
         public override void UpdateVehicle()
         {
-            base.UpdateVehicle();
+            Node nextNode = PublicAvaliableReferences.GetTrainNode(CounterNodes);
+            if (!CanMove || !nextNode.CanGoThrough)
+                return;
 
+            if (CanColide)
+                LimitSpeedByVehicleDistance();
+
+            //apply movement
+            MoveVehicleForward();
+
+            bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
+            if (didAriveToNode)
+                UpdateNode();
+
+            if (nextNode is TrainTriggerNode triggerNode)
+                triggerNode.TriggerTurnpike();
 
             if (CounterNodes == 0)
-                DisableVehicle();
+                PublicAvaliableReferences.ReverseTrainPath(this);
+        }
+        protected override void UpdateNode()
+        {
+            //reducing count of nodes left
+            CounterNodes--;
+            Node nextNode = PublicAvaliableReferences.GetTrainNode(CounterNodes);
+            if (nextNode is null)
+                return;
+
+            GetNewGraphic();
+
+            positionVector = nextNode.Vector;
+            DistanceToTravel += positionVector.Length;
         }
     }
 }

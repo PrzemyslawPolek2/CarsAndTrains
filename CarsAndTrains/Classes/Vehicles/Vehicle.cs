@@ -43,13 +43,12 @@ namespace CarsAndTrains.Classes.Vehicles
         #endregion
         #region private fields
         protected double currentSpeed;
-        private PositionVector positionVector;
+        protected PositionVector positionVector;
         #endregion
         #region public constructors
         public Vehicle()
         {
             EnableVehicle();
-
         }
 
         public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : this()
@@ -60,7 +59,7 @@ namespace CarsAndTrains.Classes.Vehicles
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
 
-            this.positionVector = PublicAvaliableReferences.GetNode(CounterNodes).Vector;
+            this.positionVector = PublicAvaliableReferences.GetCarNode(CounterNodes).Vector;
             DistanceToTravel = positionVector.Length;
         }
 
@@ -72,7 +71,7 @@ namespace CarsAndTrains.Classes.Vehicles
         public virtual void UpdateVehicle()
         {
             //GetNextNode będzie wysyłać parametr CounterNodes
-            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
+            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes);
             if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
@@ -88,11 +87,11 @@ namespace CarsAndTrains.Classes.Vehicles
 
         }
 
-        private void UpdateNode()
+        protected virtual void UpdateNode()
         {
             //reducing count of nodes left
             CounterNodes--;
-            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
+            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes);
             if (nextNode is null)
                 return;
             /*if (nextNode is TrainTriggerNode node)
@@ -145,12 +144,11 @@ namespace CarsAndTrains.Classes.Vehicles
             CanMove = false;
             CanColide = false;
         }
-        public void EnableVehicle()
+        public virtual void EnableVehicle()
         {
-            IsActive = false;
-            IsVisible = false;
-            CanMove = false;
-            CanColide = false;
+            IsVisible = true;
+            CanMove = true;
+            CanColide = true;
         }
         #endregion
     }

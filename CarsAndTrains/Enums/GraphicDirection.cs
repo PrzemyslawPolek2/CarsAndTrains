@@ -3,12 +3,12 @@
     enum GraphicDirection
     {
         UP,
-        UP_LEFT,
-        LEFT,
-        DOWN_LEFT,
-        DOWN,
-        DOWN_RIGT,
+        UP_RIGHT,
         RIGHT,
-        UP_RIGHT
+        DOWN_RIGHT,
+        DOWN,
+        DOWN_LEFT,
+        LEFT,
+        UP_LEFT
     }
 }

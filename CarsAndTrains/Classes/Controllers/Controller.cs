@@ -20,6 +20,6 @@ namespace CarsAndTrains.Classes.Controllers
         public void Abort() => _thread.Abort();
 
         // Override in base class
-        public abstract void RunThread();
+        protected abstract void RunThread();
     }
 }

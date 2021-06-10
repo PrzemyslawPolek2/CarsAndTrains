@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\CarsController.cs" />
     <Compile Include="Classes\Controllers\Controller.cs" />
+    <Compile Include="Classes\Controllers\TrainController.cs" />
     <Compile Include="Classes\Nodes\Turnpike.cs" />
     <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
@@ -111,9 +112,15 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Map\map.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\Images\Cars\Blue\blue_car_left.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_0.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_1.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_2.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_3.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_4.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_5.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_6.png" />
+    <Resource Include="Resources\Images\Cars\Blue\car_7.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

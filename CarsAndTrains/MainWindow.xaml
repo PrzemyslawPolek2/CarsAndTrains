@@ -12,7 +12,6 @@
         >
     <Grid>
         <Canvas x:Name="canvas" Height="600" Width="800" MouseRightButtonDown="CanvasRightMouseDownEventHandler" MouseLeftButtonDown="CanvasLeftMouseDownEventHandler" >
-            <Image x:Name="exampleCar" Source="/Resources/Images/Cars/blue_car_sideways.png" Canvas.Top="120" Canvas.Left="6" Width="30" Height="20" Panel.ZIndex="5"></Image>
             <Image Source="/Resources/Images/Map/map.png" Height="600" Width="800" Panel.ZIndex="0"></Image>
         </Canvas>
     </Grid>
