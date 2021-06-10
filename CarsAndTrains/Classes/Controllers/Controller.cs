@@ -4,7 +4,7 @@ namespace CarsAndTrains.Classes.Controllers
 {
     public abstract class Controller
     {
-        private Thread _thread;
+        private readonly Thread _thread;
         public const int THREAD_TICK = 10;
 
         protected Controller()

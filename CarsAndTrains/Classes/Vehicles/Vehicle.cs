@@ -1,20 +1,24 @@
 ﻿using CarsAndTrains.Classes.Nodes;
+using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace CarsAndTrains.Classes.Vehicles
 {
     public abstract class Vehicle
     {
-        private static int CarID = 0;
+        public static int CarID { get; private set; } = 0;
         public int carID = 0;
-        private const double OFFSET = .5f;
+        public const double VEHICLE_DISTANCE_OFFSET = 2.5f;
+        public const double NODE_DISTANCE_OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
         public bool CanColiding { get; set; }
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
         public int CounterNodes { get; set; }
+        public BitmapImage CurrentGraphics { get; protected set; }
         public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
         public Point ActualPosition { get; set; } = new Point();
@@ -36,7 +40,6 @@ namespace CarsAndTrains.Classes.Vehicles
                 currentSpeed = 0;
         }
 
-        public string CurrentGraphics { get; protected set; }
         #endregion
         #region private fields
         protected double currentSpeed;
@@ -66,76 +69,83 @@ namespace CarsAndTrains.Classes.Vehicles
 
 
         #region public methods
+
         public virtual void UpdateVehicle()
         {
-            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);//GetNextNode będzie wysyłać parametr CounterNodes
+            //GetNextNode będzie wysyłać parametr CounterNodes
+            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
 
             if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
             if (CanColiding)
+                LimitSpeedByVehicleDistance();
+
+            //apply movement
+            MoveVehicleForward();
+
+            bool didAriveToNode = (this.positionVector.Length - TraveledDistance) <= NODE_DISTANCE_OFFSET;
+            if (didAriveToNode)
             {
-                SpeedControlBasedOnNextVehicle();
+                UpdateNode();
             }
-            //przesuwanie vehicle miedzy nodami
-            MoveVehicleBeetweenNodes();
-            //sprawdzanie czy dojechal do node
-            _ = DidArriveToNode(nextNode);
 
             if (CounterNodes == 0)
-                EmptiedNodesAction();
+                DisableVehicle();
 
         }
-        #endregion
-        #region protected methods
-        protected void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(this.carID);
 
+        private void UpdateNode()
+        {
+            //reducing count of nodes left
+            CounterNodes--;
+            Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
+            if (nextNode is null)
+                return;
+            /*if (nextNode is TrainTriggerNode node)
+                node.TriggerTurnpike();*/
+
+            GetNewGraphic();
+
+            this.positionVector = nextNode.Vector;
+            TraveledDistance = 0;
+        }
+
+        public bool Arived() => CounterNodes == 0;
+        public void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
         #endregion
         #region private methods
-        private Node DidArriveToNode(Node nextNode)
+        protected void MoveVehicleForward()
         {
-            if ((this.positionVector.Length - TraveledDistance) <= OFFSET)
-            {
-                CounterNodes--;
-                nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
-                Debug.WriteLine($"{carID}|{positionVector.NormalizedX} {positionVector.NormalizedY}");
-                if (nextNode is TrainTriggerNode node)
-                    node.TriggerTurnpike();
-                GetNewGraphic();
-                this.positionVector = nextNode.Vector;
-                /*if (nextNode.CanGoThrough)
-                    CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(this.carID);*/
-                TraveledDistance = 0;
-            }
-            return nextNode;
-        }
-        private void MoveVehicleBeetweenNodes()
-        {
-            if (this.positionVector.Length < CurrentSpeed)
-                CurrentSpeed = CurrentSpeed - this.positionVector.Length;
+            // don't let vehicle pass node
+            double _currentSpeed = this.CurrentSpeed;
+            if (positionVector.Length - TraveledDistance < _currentSpeed)
+                _currentSpeed -= this.positionVector.Length - TraveledDistance;
+
+            //apply to position
             ActualPosition = new Point(
-                ActualPosition.X + (CurrentSpeed * this.positionVector.NormalizedX),
-                ActualPosition.Y + (CurrentSpeed * this.positionVector.NormalizedY)
+                ActualPosition.X + (_currentSpeed * this.positionVector.NormalizedX),
+                ActualPosition.Y + (_currentSpeed * this.positionVector.NormalizedY)
                 );
 
-            TraveledDistance = TraveledDistance + CurrentSpeed;
+            TraveledDistance += _currentSpeed;
         }
 
-        private void SpeedControlBasedOnNextVehicle()
+        protected void LimitSpeedByVehicleDistance()
         {
-            if (!PublicAvaliableReferences.VehiclesExistOnPath(this.NextVehicleIndex))
+            //if no vehicle exists on path, no need to limit speed
+            if (!PublicAvaliableReferences.VehiclesExistOnPath(this))
                 return;
 
-            if (PublicAvaliableReferences.IsVehicleInTheWay(this.NextVehicleIndex, this))
+            if (PublicAvaliableReferences.IsVehicleInTheWay(this))
                 this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
             else
                 this.CurrentSpeed = this.VehicleSpeed;
         }
 
-        public bool Arived() => CounterNodes == 0;
-
-        private void EmptiedNodesAction()
+        protected void DisableVehicle()
         {
+            IsActive = false;
             IsVisible = false;
             CanMove = false;
             CanColiding = false;

@@ -2,6 +2,8 @@
 {
     public class Car : Vehicle
     {
+        public const double CAR_HEIGHT = 20.0f;
+        public const double CAR_WIDTH = 30.0f;
         public Car()
         {
 

@@ -15,14 +15,16 @@ namespace CarsAndTrains
     public partial class MainWindow : Window
     {
         private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
+        private const int NODE_SIZE = 20;
         public static MainWindow GetMain;
         public static bool CreateNode = false;
         public MainWindow()
         {
             GetMain = this;
             InitializeComponent();
+            if (CreateNode)
+                return;
             PublicAvaliableReferences.Initialize(canvas);
-            clickPositionL.Content = "[" + GetMain.GetCanvasHeight() + ";" + GetMain.GetCanvasWidth() + "]";
             StartThreads();
         }
 
@@ -34,18 +36,21 @@ namespace CarsAndTrains
 
         private void CanvasMouseDownEventHandler(object sender, MouseButtonEventArgs e)
         {
-            Point p = Mouse.GetPosition(canvas);
-            string str = p.X + " " + p.Y;
-
-            clickPositionL.Content = str;
-
             if (!CreateNode)
                 return;
-            CreateNodePosition(str);
+
+            Point canvasPoint = Mouse.GetPosition(canvas);
+
+            double nodePositionX = (canvasPoint.X - (NODE_SIZE / 2));
+            double nodePositionY = (canvasPoint.Y - (NODE_SIZE / 2));
+
+            string positionsString = nodePositionX + " " + nodePositionY;
+            
+            CreateNodePosition(positionsString);
             Ellipse ellipse = new Ellipse
             {
-                Width = 20,
-                Height = 20,
+                Width = NODE_SIZE,
+                Height = NODE_SIZE,
                 Fill = new SolidColorBrush
                 {
                     Color = Color.FromArgb(255,
@@ -54,8 +59,8 @@ namespace CarsAndTrains
                                                    0)
                 }
             };
-            Canvas.SetLeft(ellipse, p.X);
-            Canvas.SetTop(ellipse, p.Y);
+            Canvas.SetLeft(ellipse, nodePositionX);
+            Canvas.SetTop(ellipse, nodePositionY);
             Panel.SetZIndex(ellipse, 5);
             canvas.Children.Add(ellipse);
         }
