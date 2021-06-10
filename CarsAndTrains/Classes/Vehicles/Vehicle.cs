@@ -8,22 +8,22 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public abstract class Vehicle
     {
-        public static int CarID { get; private set; } = 0;
-        public int carID = 0;
-        public const double VEHICLE_DISTANCE_OFFSET = 2.5f;
+
+        public const double VEHICLE_DISTANCE_OFFSET = 40f;
         public const double NODE_DISTANCE_OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
-        public bool CanColiding { get; set; }
+        public bool CanColide { get; set; }
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
         public int CounterNodes { get; set; }
-        public BitmapImage CurrentGraphics { get; protected set; }
+        public BitmapImage CurrentGraphics { get; set; }
         public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
         public Point ActualPosition { get; set; } = new Point();
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
+        public double DistanceToTravel { get; protected set; }
         public int NextVehicleIndex { get; protected set; }
         public double CurrentSpeed
         {
@@ -48,21 +48,20 @@ namespace CarsAndTrains.Classes.Vehicles
         #region public constructors
         public Vehicle()
         {
-            CanMove = true;
-            CanColiding = true;
-            IsVisible = true;
-            IsActive = true;
-            carID = CarID;
-            CarID++;
+            EnableVehicle();
+
         }
 
         public Vehicle(double VehicleSpeed, int CounterNodes, double DeathAfterArivalTime, int NextVehicleIndex) : this()
         {
             this.VehicleSpeed = VehicleSpeed;
+            this.CurrentSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
+
             this.positionVector = PublicAvaliableReferences.GetNode(CounterNodes).Vector;
+            DistanceToTravel = positionVector.Length;
         }
 
         #endregion
@@ -74,24 +73,18 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             //GetNextNode będzie wysyłać parametr CounterNodes
             Node nextNode = PublicAvaliableReferences.GetNode(CounterNodes);
-
             if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
-            if (CanColiding)
+            if (CanColide)
                 LimitSpeedByVehicleDistance();
 
             //apply movement
             MoveVehicleForward();
 
-            bool didAriveToNode = (this.positionVector.Length - TraveledDistance) <= NODE_DISTANCE_OFFSET;
+            bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
             if (didAriveToNode)
-            {
                 UpdateNode();
-            }
-
-            if (CounterNodes == 0)
-                DisableVehicle();
 
         }
 
@@ -107,8 +100,8 @@ namespace CarsAndTrains.Classes.Vehicles
 
             GetNewGraphic();
 
-            this.positionVector = nextNode.Vector;
-            TraveledDistance = 0;
+            positionVector = nextNode.Vector;
+            DistanceToTravel += positionVector.Length;
         }
 
         public bool Arived() => CounterNodes == 0;
@@ -119,8 +112,8 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             // don't let vehicle pass node
             double _currentSpeed = this.CurrentSpeed;
-            if (positionVector.Length - TraveledDistance < _currentSpeed)
-                _currentSpeed -= this.positionVector.Length - TraveledDistance;
+            if (DistanceToTravel - TraveledDistance < _currentSpeed)
+                _currentSpeed -= DistanceToTravel - TraveledDistance;
 
             //apply to position
             ActualPosition = new Point(
@@ -134,21 +127,30 @@ namespace CarsAndTrains.Classes.Vehicles
         protected void LimitSpeedByVehicleDistance()
         {
             //if no vehicle exists on path, no need to limit speed
-            if (!PublicAvaliableReferences.VehiclesExistOnPath(this))
+            if (!PublicAvaliableReferences.IsAnyVehicleInFront(this))
                 return;
 
-            if (PublicAvaliableReferences.IsVehicleInTheWay(this))
+            if (PublicAvaliableReferences.IsCarInTheWay(this))
+            {
                 this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
+            }
             else
                 this.CurrentSpeed = this.VehicleSpeed;
         }
 
-        protected void DisableVehicle()
+        public void DisableVehicle()
         {
             IsActive = false;
             IsVisible = false;
             CanMove = false;
-            CanColiding = false;
+            CanColide = false;
+        }
+        public void EnableVehicle()
+        {
+            IsActive = false;
+            IsVisible = false;
+            CanMove = false;
+            CanColide = false;
         }
         #endregion
     }

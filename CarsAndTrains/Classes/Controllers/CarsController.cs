@@ -12,8 +12,10 @@ namespace CarsAndTrains.Classes.Controllers
                 Debug.WriteLine("[Vehicles TICK]");
                 PublicAvaliableReferences.UpdateAllCars();
                 Thread.Sleep(THREAD_TICK);
-            } while (!PublicAvaliableReferences.IsFinished);
+            } while (!PublicAvaliableReferences.IsCarPoolFinished);
 
+            //once finished looping, abort self
+            this.Abort();
         }
     }
 }

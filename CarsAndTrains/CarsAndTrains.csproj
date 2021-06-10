@@ -63,6 +63,7 @@
     <Compile Include="Classes\Vehicles\Car.cs" />
     <Compile Include="Classes\Vehicles\CarFactory.cs" />
     <Compile Include="Classes\Vehicles\Train.cs" />
+    <Compile Include="Classes\Vehicles\TrainFactory.cs" />
     <Compile Include="Classes\Vehicles\Vehicle.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

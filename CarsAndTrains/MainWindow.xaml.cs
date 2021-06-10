@@ -1,5 +1,7 @@
 ﻿using CarsAndTrains.Classes;
 using CarsAndTrains.Classes.Controllers;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,10 +16,14 @@ namespace CarsAndTrains
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string NODE_POSITION_FILE_NAME = "/nodePositions.txt";
-        private const int NODE_SIZE = 20;
         public static MainWindow GetMain;
+        public static List<Controller> threads;
+
+        private const int NODE_SIZE = 20;
+
         public static bool CreateNode = false;
+        public static bool CreateTrainNode = false;
+        public static bool CreateCarNode = false;
         public MainWindow()
         {
             GetMain = this;
@@ -25,63 +31,96 @@ namespace CarsAndTrains
             if (CreateNode)
                 return;
             PublicAvaliableReferences.Initialize(canvas);
-            StartThreads();
+            //StartThreads();
+            this.Closing += MainWindow_Closing;
         }
 
-        private async static void StartThreads()
+
+        private static void AbortThreads()
         {
+            for (int i = 0; i < threads.Count; i++)
+                threads[i].Abort();
+        }
+        private static void StartThreads()
+        {
+            threads = new List<Controller>();
             CarsController carsController = new CarsController();
+            threads.Add(carsController);
             carsController.Start();
         }
-
-        private void CanvasMouseDownEventHandler(object sender, MouseButtonEventArgs e)
+        private void CanvasRightMouseDownEventHandler(object sender, MouseButtonEventArgs e)
         {
             if (!CreateNode)
                 return;
-
             Point canvasPoint = Mouse.GetPosition(canvas);
+            SaveNewNode(canvasPoint, "1");
+        }
 
+        private void CanvasLeftMouseDownEventHandler(object sender, MouseButtonEventArgs e)
+        {
+            if (!CreateNode)
+                return;
+            Point canvasPoint = Mouse.GetPosition(canvas);
+            SaveNewNode(canvasPoint, "0");
+        }
+        private void SaveNewNode(Point canvasPoint, string trainTriggeringNode)
+        {
             double nodePositionX = (canvasPoint.X - (NODE_SIZE / 2));
             double nodePositionY = (canvasPoint.Y - (NODE_SIZE / 2));
 
             string positionsString = nodePositionX + " " + nodePositionY;
-            
-            CreateNodePosition(positionsString);
-            Ellipse ellipse = new Ellipse
-            {
-                Width = NODE_SIZE,
-                Height = NODE_SIZE,
-                Fill = new SolidColorBrush
-                {
-                    Color = Color.FromArgb(255,
-                                                   128,
-                                                   255,
-                                                   0)
-                }
-            };
-            Canvas.SetLeft(ellipse, nodePositionX);
-            Canvas.SetTop(ellipse, nodePositionY);
-            Panel.SetZIndex(ellipse, 5);
-            canvas.Children.Add(ellipse);
+            if (CreateCarNode)
+                CreateCarNodePosition(positionsString);
+            if (CreateTrainNode)
+                CreateTrainNodePosition($"{positionsString} {trainTriggeringNode}");
+            PublicAvaliableReferences.CreateNodeArt(this.canvas,
+                                                    nodePositionX,
+                                                    nodePositionY,
+                                                    255,
+                                                    (byte)(int.Parse(trainTriggeringNode) * PublicAvaliableReferences.ALPHA_FULL),
+                                                    0);
         }
 
-        private static void CreateNodePosition(string str)
+        private void CreateTrainNodePosition(string positionsString)
         {
             string path = System.Reflection.Assembly.GetEntryAssembly().Location;
-            path = System.IO.Path.GetDirectoryName(path) + NODE_POSITION_FILE_NAME;
+            path = System.IO.Path.GetDirectoryName(path);
+            path += PublicAvaliableReferences.TRAIN_NODES_FILE_NAME;
 
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-                    sw.WriteLine(str);
+                    sw.WriteLine(positionsString);
+                }
+            }
+            else
+            {
+                using (StreamWriter streamWriter = File.AppendText(path))
+                {
+                    streamWriter.WriteLine(positionsString);
+                }
+            }
+        }
+
+        private static void CreateCarNodePosition(string positionString)
+        {
+            string path = System.Reflection.Assembly.GetEntryAssembly().Location;
+            path = System.IO.Path.GetDirectoryName(path);
+            path += PublicAvaliableReferences.CAR_NODES_FILE_NAME;
+
+            if (!File.Exists(path))
+            {
+                using (StreamWriter streamWriter = File.CreateText(path))
+                {
+                    streamWriter.WriteLine(positionString);
                 }
             }
             else
             {
                 using (StreamWriter sw = File.AppendText(path))
                 {
-                    sw.WriteLine(str);
+                    sw.WriteLine(positionString);
                 }
             }
         }
@@ -94,5 +133,8 @@ namespace CarsAndTrains
         {
             return canvas.Height;
         }
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) => AbortThreads();
+
+
     }
 }

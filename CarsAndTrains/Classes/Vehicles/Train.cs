@@ -6,23 +6,24 @@ namespace CarsAndTrains.Classes.Vehicles
     {
         public Train()
         {
-
+            EnableVehicle();
         }
 
-        public Train(double VehicleSpeed, int CounterNodes) //Train
+        public Train(double VehicleSpeed, int CounterNodes, int NextVehicleIndex) : this()
         {
             this.VehicleSpeed = VehicleSpeed;
+            this.CurrentSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
-
-            CanMove = true;
-            CanColiding = false;
-            IsVisible = false;
-            IsActive = true;
+            this.NextVehicleIndex = NextVehicleIndex;
         }
 
         public override void UpdateVehicle()
         {
-            throw new NotImplementedException();
+            base.UpdateVehicle();
+
+
+            if (CounterNodes == 0)
+                DisableVehicle();
         }
     }
 }
