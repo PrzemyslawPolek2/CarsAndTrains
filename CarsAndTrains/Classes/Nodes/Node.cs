@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 
 namespace CarsAndTrains.Classes.Nodes
@@ -57,7 +58,8 @@ namespace CarsAndTrains.Classes.Nodes
 
             xVector = nextNode.Position.X - this.Position.X;
             yVector = nextNode.Position.Y - this.Position.Y;
-
+            if (finalVector == 0)
+                finalVector = 1;
             Point normalizedPosition = new Point
             {
                 X = xVector / finalVector,

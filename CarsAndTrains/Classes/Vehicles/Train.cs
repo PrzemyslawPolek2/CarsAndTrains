@@ -25,13 +25,15 @@ namespace CarsAndTrains.Classes.Vehicles
                 return;
 
             //apply movement
+            Debug.WriteLine($"PRE\t{ActualPosition.X} {ActualPosition.Y}");
             MoveVehicleForward();
-            Debug.WriteLine($"{ActualPosition.X} {ActualPosition.Y}");
+            Debug.WriteLine($"POST\t{ActualPosition.X} {ActualPosition.Y}");
 
             bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
             if (didAriveToNode)
                 UpdateNode();
 
+            Debug.WriteLine($"VEC\t{positionVector.NormalizedX} {positionVector.NormalizedY}");
             if (CounterNodes == 0)
             {
                 CanMove = false;

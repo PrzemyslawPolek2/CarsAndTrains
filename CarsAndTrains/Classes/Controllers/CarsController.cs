@@ -9,13 +9,11 @@ namespace CarsAndTrains.Classes.Controllers
         {
             do
             {
-                //Debug.WriteLine("[Vehicles TICK]");
                 PublicAvaliableReferences.UpdateAllCars();
                 Thread.Sleep(THREAD_TICK);
             } while (!PublicAvaliableReferences.IsCarPoolFinished);
 
             //once finished looping, abort self
-            Debug.WriteLine("[Vehicles END]");
             this.Abort();
         }
     }

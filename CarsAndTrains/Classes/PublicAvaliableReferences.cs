@@ -53,7 +53,7 @@ namespace CarsAndTrains.Classes
         private static bool drawNodes = false;
         private static bool drawCars = true;
         private static bool drawTrains = true;
-        private static bool invertedTrainRoute = false;
+        private static bool invertedTrainRoute = true;
 
 
         private static readonly float[,] directions =
