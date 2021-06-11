@@ -15,9 +15,9 @@ namespace CarsAndTrains.Classes.Vehicles
             random = new Random();
         }
 
-        public static Train Create(int nodesNumber, int NextVehicleIndex)
+        public static Train Create(int nodesCount, int nextVehicleIndex)
         {
-            Train train = new Train(RandomSpeedGenerator(), nodesNumber, NextVehicleIndex);
+            Train train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex);
             return train;
         }
 

@@ -46,11 +46,11 @@ namespace CarsAndTrains.Classes
         private const int SPAWN_TRAIN_LIMIT = 1;
 
         private const float DEATH_TICK_VALUE = 1.0f;
-        private const int SPAWN_DELAY = 500;
+        private const int SPAWN_DELAY = 200;
         private const int VEHICLE_DIRECTIONS = 8;
-        private static int railsNodeIndex = 11;
+        private static int railsNodeIndex = 12;
 
-        private static bool drawNodes = true;
+        private static bool drawNodes = false;
         private static bool drawCars = true;
         private static bool drawTrains = true;
         private static bool invertedTrainRoute = false;
@@ -199,8 +199,8 @@ namespace CarsAndTrains.Classes
                 while ((readLine = streamReader.ReadLine()) != null)
                 {
                     string[] values = readLine.Split(' ');
-                    float xValue = float.Parse(values[0]);
-                    float yValue = float.Parse(values[1]);
+                    double xValue = double.Parse(values[0]);
+                    double yValue = double.Parse(values[1]);
                     int triggeringNode = int.Parse(values[2]);
 
                     if (triggeringNode == 0)
@@ -224,19 +224,22 @@ namespace CarsAndTrains.Classes
             for (int i = 0; i < trainNodes.Count; i++)
             {
                 Node node = trainNodes[i];
-                if (i + 1 >= trainNodes.Count)
-                {
-                    node.CanGoThrough = false;
-                    node.CalculateVector(trainNodes[i]);
-                }
+
+                if ((i + 1) >= trainNodes.Count)
+                    node.CalculateVector(trainNodes[0]);
                 else
                     node.CalculateVector(trainNodes[i + 1]);
+
+                Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
             }
         }
 
         private static void CreateTrainsPool()
         {
             int nodesCount = trainNodes.Count();
+            if (nodesCount <= 0)
+                throw new Exception();
+
             trains = new List<Train>();
             trainsArt = new List<Image>();
 
@@ -252,12 +255,7 @@ namespace CarsAndTrains.Classes
                 train.ActualPosition = trainNodes[0].GetNodePosition();
                 //assign first grahpic to the car
                 train.CurrentGraphics = trainsBitmaps[(int)Enums.GraphicDirection.RIGHT];
-
-                if (i != 0)
-                {
-                    train.EnableVehicle();
-                    train.DeathAfterArivalTime = SPAWN_DELAY * i;
-                }
+                
 
                 trains.Add(train);
 
@@ -269,10 +267,9 @@ namespace CarsAndTrains.Classes
                 };
 
 
-                Panel.SetZIndex(trainImage, 5);
+                Panel.SetZIndex(trainImage, 10);
                 canvas.Children.Add(trainImage);
                 trainsArt.Add(trainImage);
-
                 MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
             }
         }
@@ -334,48 +331,20 @@ namespace CarsAndTrains.Classes
                     for (int i = 0; i < trains.Count; i++)
                     {
                         Train train = trains[i];
-
-                        if (!train.IsActive)
-                        {
-                            train.EnableVehicle();
-                            train.IsActive = true;
-                            
-                            //ReincarnateVehicle(train);
-                            continue;
-                        }
+                        //if (!train.IsActive)
+                        //{
+                        //    ReincarnateVehicle(train);
+                        //    continue;
+                        //}
 
                         train.UpdateVehicle();
-                        if (!train.IsVisible)
-                            continue;
 
+                        //if (!train.IsVisible)
+                        //    continue;
                         MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
                     }
                 }
         }
-
-        private static Action UpdateOnCanvas(Image image, Vehicle vehicle)
-        {
-            return () =>
-            {
-                image.Source = vehicle.CurrentGraphics;
-                Canvas.SetLeft(image, vehicle.ActualPosition.X);
-                Canvas.SetTop(image, vehicle.ActualPosition.Y);
-            };
-        }
-
-        public static void ReverseTrainPath(Train train)
-        {
-            train.CounterNodes = trainNodes.Count;
-            invertedTrainRoute = !invertedTrainRoute;
-        }
-
-        private static void ReincarnateVehicle(Vehicle vehicle)
-        {
-            vehicle.IsActive = true;
-            vehicle.EnableVehicle();
-            vehicle.GetNewGraphic();
-        }
-
         public static void UpdateAllCars()
         {
             lock (cars) lock (carsArt)
@@ -406,6 +375,41 @@ namespace CarsAndTrains.Classes
                     IsCarPoolFinished = DidAllCarsArrive();
                 }
         }
+
+        private static Action UpdateOnCanvas(Image image, Vehicle vehicle)
+        {
+            if (vehicle is Train train)
+            {
+                return () =>
+                {
+                    image.Source = train.CurrentGraphics;
+                    Canvas.SetLeft(image, train.ActualPosition.X);
+                    Canvas.SetTop(image, train.ActualPosition.Y);
+                };
+            }
+
+            return () =>
+            {
+                image.Source = vehicle.CurrentGraphics;
+                Canvas.SetLeft(image, vehicle.ActualPosition.X);
+                Canvas.SetTop(image, vehicle.ActualPosition.Y);
+            };
+        }
+
+        public static void ReverseTrainPath(Train train)
+        {
+            return;
+            train.CounterNodes = trainNodes.Count;
+            invertedTrainRoute = !invertedTrainRoute;
+        }
+
+        private static void ReincarnateVehicle(Vehicle vehicle)
+        {
+            vehicle.IsActive = true;
+            vehicle.EnableVehicle();
+            vehicle.GetNewGraphic();
+        }
+
 
         #endregion
 
@@ -514,10 +518,33 @@ namespace CarsAndTrains.Classes
                     selectedDirection = i;
                     break;
                 }
-                Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
-                Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
-                Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
+                //Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
+                //Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
+                //Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
                 return carsBitmaps[selectedDirection];
+            }
+        }
+
+        public static BitmapImage GetNextTrainGraphic(double normalizedX, double normalizedY)
+        {
+            lock (directions)
+            {
+                int selectedDirection = 0;
+                for (int i = 0; i < VEHICLE_DIRECTIONS; i++)
+                {
+                    if (!IsInBetween(normalizedX, directions[i, 0], directions[i, 1]))
+                        continue;
+
+                    if (!IsInBetween(normalizedY, directions[i, 2], directions[i, 3]))
+                        continue;
+
+                    selectedDirection = i;
+                    break;
+                }
+                //Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
+                //Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
+                //Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
+                return trainsBitmaps[selectedDirection];
             }
         }
 
@@ -531,18 +558,8 @@ namespace CarsAndTrains.Classes
             }
 
             bool isInBetweenValues = (value >= smallerLimit & value <= biggerLimit);
-            Debug.WriteLine($"\t {smallerLimit} <= {value} <= {biggerLimit} == {isInBetweenValues}");
+            //Debug.WriteLine($"\t {smallerLimit} <= {value} <= {biggerLimit} == {isInBetweenValues}");
             return isInBetweenValues;
-        }
-
-        public static double GetNextVehicleWidth(int index)
-        {
-            if (index == -1)
-                return 1f;
-            lock (carsArt)
-            {
-                return carsArt[index].Width;
-            }
         }
 
         public static double GetNextVehicleSpeed(int index)

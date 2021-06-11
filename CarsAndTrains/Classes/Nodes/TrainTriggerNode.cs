@@ -7,9 +7,10 @@ namespace CarsAndTrains.Classes.Nodes
     {
         #region Constructors
 
-        public TrainTriggerNode(Point position) : base(position)
+        public TrainTriggerNode(Point position)
         {
-            
+            CanGoThrough = true; 
+            this.Position = position;
         }
 
         #endregion

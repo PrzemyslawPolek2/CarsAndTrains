@@ -34,7 +34,7 @@ namespace CarsAndTrains.Classes.Nodes
 
         public Point GetNodePosition()
         {
-            return Position;
+            return this.Position;
         }
         #endregion
 

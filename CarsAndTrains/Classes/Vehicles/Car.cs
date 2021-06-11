@@ -19,6 +19,8 @@
                                                                                           DeathAfterArivalTime, NextVehicleIndex)
         {
 
+            this.positionVector = PublicAvaliableReferences.GetCarNode(CounterNodes).Vector;
+            DistanceToTravel = positionVector.Length;
         }
         public override void UpdateVehicle()
         {

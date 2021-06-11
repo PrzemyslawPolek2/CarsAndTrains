@@ -20,7 +20,7 @@ namespace CarsAndTrains.Classes.Vehicles
         public BitmapImage CurrentGraphics { get; set; }
         public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
-        public Point ActualPosition { get; set; } = new Point();
+        public Point ActualPosition { get; set; }
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
         public double DistanceToTravel { get; protected set; }
@@ -45,7 +45,7 @@ namespace CarsAndTrains.Classes.Vehicles
         protected double currentSpeed;
         protected PositionVector positionVector;
         #endregion
-        #region public constructors
+        #region Constructors
         public Vehicle()
         {
             EnableVehicle();
@@ -59,8 +59,6 @@ namespace CarsAndTrains.Classes.Vehicles
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
 
-            this.positionVector = PublicAvaliableReferences.GetCarNode(CounterNodes).Vector;
-            DistanceToTravel = positionVector.Length;
         }
 
         #endregion
@@ -71,13 +69,12 @@ namespace CarsAndTrains.Classes.Vehicles
         public virtual void UpdateVehicle()
         {
             //GetNextNode będzie wysyłać parametr CounterNodes
-            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes);
+            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes - 1);
             if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
             if (CanColide)
                 LimitSpeedByVehicleDistance();
-
             //apply movement
             MoveVehicleForward();
 
@@ -94,8 +91,6 @@ namespace CarsAndTrains.Classes.Vehicles
             Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes);
             if (nextNode is null)
                 return;
-            /*if (nextNode is TrainTriggerNode node)
-                node.TriggerTurnpike();*/
 
             GetNewGraphic();
 
@@ -103,21 +98,23 @@ namespace CarsAndTrains.Classes.Vehicles
             DistanceToTravel += positionVector.Length;
         }
 
-        public bool Arived() => CounterNodes == 0;
-        public void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
+        public virtual bool Arived() => CounterNodes == 0;
+        public virtual void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
         #endregion
         #region private methods
-        protected void MoveVehicleForward()
+        protected virtual void MoveVehicleForward()
         {
             // don't let vehicle pass node
             double _currentSpeed = this.CurrentSpeed;
             if (DistanceToTravel - TraveledDistance < _currentSpeed)
                 _currentSpeed -= DistanceToTravel - TraveledDistance;
-
             //apply to position
-            ActualPosition = new Point(
-                ActualPosition.X + (_currentSpeed * this.positionVector.NormalizedX),
-                ActualPosition.Y + (_currentSpeed * this.positionVector.NormalizedY)
+            double xValue = _currentSpeed * positionVector.NormalizedX;
+            double yValue = _currentSpeed * positionVector.NormalizedY;
+
+            this.ActualPosition = new Point(
+                this.ActualPosition.X + xValue,
+                this.ActualPosition.Y + yValue
                 );
 
             TraveledDistance += _currentSpeed;
@@ -137,9 +134,8 @@ namespace CarsAndTrains.Classes.Vehicles
                 this.CurrentSpeed = this.VehicleSpeed;
         }
 
-        public void DisableVehicle()
+        public virtual void DisableVehicle()
         {
-            IsActive = false;
             IsVisible = false;
             CanMove = false;
             CanColide = false;
