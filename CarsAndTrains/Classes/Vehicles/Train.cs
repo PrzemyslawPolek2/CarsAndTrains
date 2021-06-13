@@ -13,6 +13,7 @@ namespace CarsAndTrains.Classes.Vehicles
             this.CurrentSpeed = VehicleSpeed;
             this.CounterNodes = CounterNodes;
             this.NextVehicleIndex = NextVehicleIndex;
+            this.IsActive = true;
 
             positionVector = PublicAvaliableReferences.GetTrainNode(CounterNodes).Vector;
             DistanceToTravel = positionVector.Length;
@@ -20,32 +21,22 @@ namespace CarsAndTrains.Classes.Vehicles
 
         public override void UpdateVehicle()
         {
-            Node nextNode = PublicAvaliableReferences.GetTrainNode(CounterNodes);
-            if (!CanMove || !nextNode.CanGoThrough)
-                return;
-
-            //apply movement
-            MoveVehicleForward();
-
-            bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
-            if (didAriveToNode)
-                UpdateNode();
-
-            
+            base.UpdateVehicle(); 
         }
         public override void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextTrainGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
 
         protected override void UpdateNode()
         {
             //reducing count of nodes left
-            if (CounterNodes == 0)
+            if (CounterNodes == 3)
             {
+                Debug.WriteLine("Reseting a train");
                 CanMove = false;
                 PublicAvaliableReferences.ReverseTrainPath(this);
             }
 
-            CounterNodes--;
-            Node nextNode = PublicAvaliableReferences.GetTrainNode(CounterNodes);
+            counterNodes--;
+            Node nextNode = GetNextNode(CounterNodes);
             if (nextNode is null)
                 return;
             Debug.WriteLine(CounterNodes);
@@ -57,6 +48,15 @@ namespace CarsAndTrains.Classes.Vehicles
 
             positionVector = nextNode.Vector;
             DistanceToTravel += positionVector.Length;
+        }
+        protected override void SetCounterNodes(int value)
+        {
+            this.counterNodes = value - 2;
+        }
+
+        protected override Node GetNextNode(int index)
+        {
+            return PublicAvaliableReferences.GetTrainNode(index);
         }
     }
 }

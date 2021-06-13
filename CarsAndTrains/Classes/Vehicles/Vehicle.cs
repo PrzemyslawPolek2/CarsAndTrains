@@ -16,7 +16,11 @@ namespace CarsAndTrains.Classes.Vehicles
         public bool CanColide { get; set; }
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
-        public int CounterNodes { get; set; }
+        public int CounterNodes {
+            get => counterNodes;
+            set => SetCounterNodes(value);
+        }
+
         public BitmapImage CurrentGraphics { get; set; }
         public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
@@ -29,6 +33,11 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             get => currentSpeed;
             set => LimitSpeed(value);
+        }
+        
+        protected virtual void SetCounterNodes(int value)
+        {
+            this.counterNodes = value;
         }
 
         protected void LimitSpeed(double value)
@@ -44,6 +53,7 @@ namespace CarsAndTrains.Classes.Vehicles
         #region private fields
         protected double currentSpeed;
         protected PositionVector positionVector;
+        protected int counterNodes;
         #endregion
         #region Constructors
         public Vehicle()
@@ -69,13 +79,12 @@ namespace CarsAndTrains.Classes.Vehicles
         public virtual void UpdateVehicle()
         {
             //GetNextNode będzie wysyłać parametr CounterNodes
-            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes - 1);
+            Node nextNode = GetNextNode(CounterNodes - 1);
             if (!CanMove || !nextNode.CanGoThrough)
                 return;
 
             if (CanColide)
                 LimitSpeedByVehicleDistance();
-            Debug.WriteLine($"{CurrentSpeed}");
             //apply movement
             MoveVehicleForward();
 
@@ -89,7 +98,7 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             //reducing count of nodes left
             CounterNodes--;
-            Node nextNode = PublicAvaliableReferences.GetCarNode(CounterNodes);
+            Node nextNode = GetNextNode(CounterNodes);
             if (nextNode is null)
                 return;
 
@@ -97,6 +106,11 @@ namespace CarsAndTrains.Classes.Vehicles
 
             positionVector = nextNode.Vector;
             DistanceToTravel += positionVector.Length;
+        }
+
+        protected virtual Node GetNextNode(int index)
+        {
+            return PublicAvaliableReferences.GetCarNode(index);
         }
 
         public virtual bool Arived() => CounterNodes == 0;
@@ -110,7 +124,6 @@ namespace CarsAndTrains.Classes.Vehicles
             if (DistanceToTravel - TraveledDistance < _currentSpeed)
                 _currentSpeed -= DistanceToTravel - TraveledDistance;
             //apply to position
-            Debug.WriteLine($"{positionVector.NormalizedX} {positionVector.NormalizedY}");
             double xValue = _currentSpeed * positionVector.NormalizedX;
             double yValue = _currentSpeed * positionVector.NormalizedY;
 

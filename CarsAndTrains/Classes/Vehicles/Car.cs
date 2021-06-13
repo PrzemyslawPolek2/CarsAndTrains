@@ -1,4 +1,6 @@
-﻿namespace CarsAndTrains.Classes.Vehicles
+﻿using CarsAndTrains.Classes.Nodes;
+
+namespace CarsAndTrains.Classes.Vehicles
 {
     public class Car : Vehicle
     {
@@ -19,7 +21,7 @@
                                                                                           DeathAfterArivalTime, NextVehicleIndex)
         {
 
-            this.positionVector = PublicAvaliableReferences.GetCarNode(CounterNodes).Vector;
+            this.positionVector = GetNextNode(CounterNodes).Vector;
             DistanceToTravel = positionVector.Length;
         }
         public override void UpdateVehicle()
@@ -29,6 +31,6 @@
             if (CounterNodes == 0)
                 DisableVehicle();
         }
-
+        protected override Node GetNextNode(int nodeCount) => PublicAvaliableReferences.GetCarNode(nodeCount);
     }
 }

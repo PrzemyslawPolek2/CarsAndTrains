@@ -53,8 +53,6 @@ namespace CarsAndTrains.Classes
         private static bool drawNodes = true;
         private static bool drawCars = true;
         private static bool drawTrains = true;
-        private static bool invertedTrainRoute = false;
-
 
         private static readonly float[,] directions =
         {
@@ -145,56 +143,8 @@ namespace CarsAndTrains.Classes
                 else
                     node.CalculateVector(carNodes[i + 1]);
 
-                if (!drawNodes)
-                    continue;
-
-                TextBlock nodeNumber = new TextBlock()
-                {
-                    Text = $"{node.Vector.NormalizedX.ToString("0.00")} {node.Vector.NormalizedY.ToString("0.00")}",
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    FontSize = 12,
-                };
-                Canvas.SetLeft(nodeNumber, node.Vector.X);
-                Canvas.SetTop(nodeNumber, node.Vector.Y);
-                canvas.Children.Add(nodeNumber);
-                Panel.SetZIndex(nodeNumber, 5);
             }
         }
-
-        public static void CreateNodeArt(Canvas canvas, double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0, int nodeInddex = -1)
-        {
-            Ellipse ellipse = new Ellipse
-            {
-                Width = Node.NODE_SIZE,
-                Height = Node.NODE_SIZE,
-                Fill = new SolidColorBrush
-                {
-                    Color = Color.FromArgb(ALPHA_FULL,
-                                           red,
-                                           green,
-                                           blue)
-                }
-            };
-            string text = nodeInddex == -1 ? $"{xValue},{yValue}" : $"{xValue},{yValue}|{nodeInddex}";
-
-            TextBlock values = new TextBlock
-            {
-                Text = text,
-                TextAlignment = TextAlignment.Center,
-                FontSize = 10,
-            };
-            Canvas.SetLeft(ellipse, xValue);
-            Canvas.SetTop(ellipse, yValue);
-            Canvas.SetLeft(values, xValue + Node.NODE_SIZE / 2);
-            Canvas.SetTop(values, yValue + (Node.NODE_SIZE / 2));
-
-            Panel.SetZIndex(ellipse, 5);
-            Panel.SetZIndex(values, 5);
-            canvas.Children.Add(ellipse);
-            canvas.Children.Add(values);
-        }
-
-        public static void CreateNodeArt(double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0) => CreateNodeArt(canvas, xValue, yValue, red, green, blue);
 
         private static void CreateTrainNodes()
         {
@@ -232,25 +182,55 @@ namespace CarsAndTrains.Classes
 
                 }
             }
-
-            ForceTrainNodeCalculation();
-        }
-
-        private static void ForceTrainNodeCalculation()
-        {
-            lock (trainNodes)
+            for (int i = 0; i < trainNodes.Count; i++)
             {
-                for (int i = 0; i < trainNodes.Count - 1; i++)
+                Node node = trainNodes[i];
+                if (i + 1 >= trainNodes.Count)
                 {
-                    Node node = trainNodes[i];
+                    node.CanGoThrough = false;
+                    node.CalculateVector(trainNodes[i]);
+                }
+                else
                     node.CalculateVector(trainNodes[i + 1]);
 
-                    Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
-                }
-                trainNodes[trainNodes.Count- 1].CalculateVector(trainNodes[trainNodes.Count - 1]);
             }
-
+            //ForceTrainNodeCalculation();
         }
+
+        public static void CreateNodeArt(Canvas canvas, double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0, int nodeInddex = -1)
+        {
+            Ellipse ellipse = new Ellipse
+            {
+                Width = Node.NODE_SIZE,
+                Height = Node.NODE_SIZE,
+                Fill = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(ALPHA_FULL,
+                                           red,
+                                           green,
+                                           blue)
+                }
+            };
+
+            //TextBlock values = new TextBlock
+            //{
+            //    Text = text,
+            //    TextAlignment = TextAlignment.Center,
+            //    FontSize = 10,
+            //};
+            Canvas.SetLeft(ellipse, xValue);
+            Canvas.SetTop(ellipse, yValue);
+            //Canvas.SetLeft(values, xValue + Node.NODE_SIZE / 2);
+            //Canvas.SetTop(values, yValue + (Node.NODE_SIZE / 2));
+
+            Panel.SetZIndex(ellipse, 5);
+            //Panel.SetZIndex(values, 5);
+            canvas.Children.Add(ellipse);
+            //canvas.Children.Add(values);
+        }
+
+        public static void CreateNodeArt(double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0) => CreateNodeArt(canvas, xValue, yValue, red, green, blue);
+
 
         private static void CreateTrainsPool()
         {
@@ -349,11 +329,11 @@ namespace CarsAndTrains.Classes
                     for (int i = 0; i < trains.Count; i++)
                     {
                         Train train = trains[i];
-                        //if (!train.IsActive)
-                        //{
-                        //    ReincarnateVehicle(train);
-                        //    continue;
-                        //}
+                        if (!train.IsActive)
+                        {
+                            //ReincarnateVehicle(train);
+                            continue;
+                        }
 
                         train.UpdateVehicle();
 
@@ -430,8 +410,7 @@ namespace CarsAndTrains.Classes
                 //else
                 //    ForceTrainNodeRightHandCalculation();
 
-                train.CounterNodes = trainNodes.Count - 1;
-                //invertedTrainRoute = !invertedTrainRoute;
+                train.CounterNodes = trainNodes.Count;
                 train.CanMove = true;
             }
         }
@@ -504,34 +483,21 @@ namespace CarsAndTrains.Classes
             return true;
         }
 
-        public static Node GetCarNode(int rawCurrentlyUsedNode)
+        public static Node GetCarNode(int nodesLeftToTravel) => GetNode(carNodes, nodesLeftToTravel);
+
+        public static Node GetTrainNode(int nodesLeftToTravel) => GetNode(trainNodes, nodesLeftToTravel);
+
+        public static Node GetNode(List<Node> nodesArray, int index)
         {
-            lock (carNodes)
+            lock (nodesArray)
             {
-                int currentNodeIndex = carNodes.Count() - rawCurrentlyUsedNode;
+                int currentNodeIndex = nodesArray.Count() - index;
+
                 if (currentNodeIndex < 0)
                     currentNodeIndex = 0;
-                if (currentNodeIndex > carNodes.Count() - 1)
-                    currentNodeIndex = carNodes.Count() - 1;
-
-                return carNodes[currentNodeIndex];
-            }
-        }
-
-        public static Node GetTrainNode(int nodesLeftToTravel)
-        {
-            lock (trainNodes)
-            {
-                //int currentNodeIndex = trainNodes.Count() - nodesLeftToTravel;
-                int currentNodeIndex = invertedTrainRoute ? trainNodes.Count() - nodesLeftToTravel : nodesLeftToTravel;
-
-                //Debug.WriteLine($"Current -> {currentNodeIndex} | {invertedTrainRoute}");
-                if (currentNodeIndex < 0)
-                    currentNodeIndex = 0;
-                if (currentNodeIndex > trainNodes.Count() - 1)
-                    currentNodeIndex = trainNodes.Count() - 1;
-                //Debug.WriteLine($"Current -> {currentNodeIndex} | {invertedTrainRoute}");
-                return trainNodes[currentNodeIndex];
+                if (currentNodeIndex > nodesArray.Count() - 1)
+                    currentNodeIndex = nodesArray.Count() - 1;
+                return nodesArray[currentNodeIndex];
             }
         }
 

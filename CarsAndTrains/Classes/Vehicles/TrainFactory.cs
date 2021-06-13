@@ -4,8 +4,8 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public class TrainFactory
     {
-        private const double SPEED_MAX_LIMIT = 0.5f;
-        private const double SPEED_MIN_LIMIT = 0.5f;
+        private const double SPEED_MAX_LIMIT = 3.5f;
+        private const double SPEED_MIN_LIMIT = 3.5f;
 
 
         private static Random random;
@@ -17,7 +17,7 @@ namespace CarsAndTrains.Classes.Vehicles
 
         public static Train Create(int nodesCount, int nextVehicleIndex)
         {
-            Train train = new Train(RandomSpeedGenerator(), nodesCount - 1, nextVehicleIndex);
+            Train train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex);
             return train;
         }
 
