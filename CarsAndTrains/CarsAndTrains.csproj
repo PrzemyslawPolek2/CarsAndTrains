@@ -122,5 +122,14 @@
     <Resource Include="Resources\Images\Cars\Blue\car_6.png" />
     <Resource Include="Resources\Images\Cars\Blue\car_7.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Objects\Lights\lights_0.png" />
+    <Resource Include="Resources\Images\Objects\Lights\lights_1.png" />
+    <Resource Include="Resources\Images\Objects\Lights\lights_2.png" />
+    <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_0_0.png" />
+    <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_0_1.png" />
+    <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_1_0.png" />
+    <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_1_1.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

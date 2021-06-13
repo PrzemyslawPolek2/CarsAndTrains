@@ -78,10 +78,14 @@ namespace CarsAndTrains.Classes.Vehicles
 
         public virtual void UpdateVehicle()
         {
+            if (!IsActive)
+                return;
             //GetNextNode będzie wysyłać parametr CounterNodes
             Node nextNode = GetNextNode(CounterNodes - 1);
             if (!CanMove || !nextNode.CanGoThrough)
+            {
                 return;
+            }
 
             if (CanColide)
                 LimitSpeedByVehicleDistance();

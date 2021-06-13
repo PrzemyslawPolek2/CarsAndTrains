@@ -14,28 +14,33 @@ namespace CarsAndTrains.Classes.Vehicles
             this.CounterNodes = CounterNodes;
             this.NextVehicleIndex = NextVehicleIndex;
             this.IsActive = true;
-
-            positionVector = PublicAvaliableReferences.GetTrainNode(CounterNodes).Vector;
+            UpdatePositionVector(CounterNodes);
             DistanceToTravel = positionVector.Length;
+        }
+
+        public void UpdatePositionVector(int CounterNodes)
+        {
+            positionVector = PublicAvaliableReferences.GetTrainNode(CounterNodes).Vector;
         }
 
         public override void UpdateVehicle()
         {
-            base.UpdateVehicle(); 
+            base.UpdateVehicle();
         }
         public override void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextTrainGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
 
         protected override void UpdateNode()
         {
             //reducing count of nodes left
-            if (CounterNodes == 3)
+            if (Arived())
             {
-                Debug.WriteLine("Reseting a train");
+                IsActive = false;
                 CanMove = false;
-                PublicAvaliableReferences.ReverseTrainPath(this);
+                DistanceToTravel = 0;
+                TraveledDistance = 0;
             }
 
-            counterNodes--;
+            CounterNodes--;
             Node nextNode = GetNextNode(CounterNodes);
             if (nextNode is null)
                 return;
@@ -51,12 +56,20 @@ namespace CarsAndTrains.Classes.Vehicles
         }
         protected override void SetCounterNodes(int value)
         {
-            this.counterNodes = value - 2;
+            this.counterNodes = value;
         }
-
+        public override bool Arived()
+        {
+            return CounterNodes <= 0;
+        }
         protected override Node GetNextNode(int index)
         {
             return PublicAvaliableReferences.GetTrainNode(index);
+        }
+
+        internal void ResetPosition()
+        {
+            this.ActualPosition = PublicAvaliableReferences.GetTrainNode(counterNodes).GetNodePosition();
         }
     }
 }

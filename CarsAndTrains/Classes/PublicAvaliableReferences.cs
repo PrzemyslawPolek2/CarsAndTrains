@@ -187,12 +187,12 @@ namespace CarsAndTrains.Classes
                 Node node = trainNodes[i];
                 if (i + 1 >= trainNodes.Count)
                 {
-                    node.CanGoThrough = false;
-                    node.CalculateVector(trainNodes[i]);
+                    //node.CanGoThrough = false;
+                    node.CalculateVector();
                 }
                 else
                     node.CalculateVector(trainNodes[i + 1]);
-
+                Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
             }
             //ForceTrainNodeCalculation();
         }
@@ -331,7 +331,11 @@ namespace CarsAndTrains.Classes
                         Train train = trains[i];
                         if (!train.IsActive)
                         {
-                            //ReincarnateVehicle(train);
+                            train.DeathAfterArivalTime -= DEATH_TICK_VALUE;
+                            if(train.DeathAfterArivalTime <= 0.0f)
+                            {
+                                ReincarnateTrain(train);
+                            }
                             continue;
                         }
 
@@ -397,21 +401,16 @@ namespace CarsAndTrains.Classes
 
         #endregion
 
-        public static void ReverseTrainPath(Train train)
+        public static void ReincarnateTrain(Train train)
         {
             lock (train)
             {
-                if (train.CounterNodes != 0)
-                    return;
-
-                Debug.WriteLine("Reactivating Train");
-                //if (invertedTrainRoute)
-                //    ForceTrainNodeLeftHandCalculation();
-                //else
-                //    ForceTrainNodeRightHandCalculation();
-
+                train.DeathAfterArivalTime = TrainFactory.DEATH_TIME;
+                train.ResetPosition();
                 train.CounterNodes = trainNodes.Count;
+                train.UpdatePositionVector(train.CounterNodes);
                 train.CanMove = true;
+                train.IsActive = true;
             }
         }
 
@@ -459,6 +458,7 @@ namespace CarsAndTrains.Classes
                 double nextVehicleBack = nextCar.TraveledDistance - (nextCar.WidthGraphics / 2);
                 double thisVehicleFront = thisVehicle.TraveledDistance + (thisVehicle.WidthGraphics / 2);
                 double differenceInDistance = Math.Abs(nextVehicleBack - thisVehicleFront);
+                Debug.WriteLine($"{((Car)nextCar).carID} - {((Car)thisVehicle).carID} | {differenceInDistance}");
                 return (differenceInDistance < Vehicle.VEHICLE_DISTANCE_OFFSET);
             }
         }

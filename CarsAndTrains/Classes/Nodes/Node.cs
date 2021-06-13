@@ -43,8 +43,7 @@ namespace CarsAndTrains.Classes.Nodes
         #region Methods
         public void CalculateVector() //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
         {
-            Vector.SetNormalized(0, 0);
-            return;
+            CalculateVector(this);
         }
 
         public void CalculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
@@ -71,8 +70,7 @@ namespace CarsAndTrains.Classes.Nodes
             //it's the same node
             if (vectorLength == 0)
             {
-                Vector.SetNormalized(0, 0);
-                return;
+                vectorLength = 1;
             }
 
             Point magnitudeVector = new Point

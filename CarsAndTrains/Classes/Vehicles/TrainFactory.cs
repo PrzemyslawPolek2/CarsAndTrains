@@ -4,6 +4,7 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public class TrainFactory
     {
+        public const double DEATH_TIME = 10.0f;
         private const double SPEED_MAX_LIMIT = 3.5f;
         private const double SPEED_MIN_LIMIT = 3.5f;
 
