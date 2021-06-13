@@ -50,10 +50,10 @@ namespace CarsAndTrains.Classes
         private const int VEHICLE_DIRECTIONS = 8;
         private static int railsNodeIndex = 12;
 
-        private static bool drawNodes = false;
+        private static bool drawNodes = true;
         private static bool drawCars = true;
         private static bool drawTrains = true;
-        private static bool invertedTrainRoute = true;
+        private static bool invertedTrainRoute = false;
 
 
         private static readonly float[,] directions =
@@ -161,12 +161,12 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static void CreateNodeArt(Canvas canvas, double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0)
+        public static void CreateNodeArt(Canvas canvas, double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0, int nodeInddex = -1)
         {
             Ellipse ellipse = new Ellipse
             {
-                Width = 20,
-                Height = 20,
+                Width = Node.NODE_SIZE,
+                Height = Node.NODE_SIZE,
                 Fill = new SolidColorBrush
                 {
                     Color = Color.FromArgb(ALPHA_FULL,
@@ -175,12 +175,23 @@ namespace CarsAndTrains.Classes
                                            blue)
                 }
             };
+            string text = nodeInddex == -1 ? $"{xValue},{yValue}" : $"{xValue},{yValue}|{nodeInddex}";
 
+            TextBlock values = new TextBlock
+            {
+                Text = text,
+                TextAlignment = TextAlignment.Center,
+                FontSize = 10,
+            };
             Canvas.SetLeft(ellipse, xValue);
             Canvas.SetTop(ellipse, yValue);
+            Canvas.SetLeft(values, xValue + Node.NODE_SIZE / 2);
+            Canvas.SetTop(values, yValue + (Node.NODE_SIZE / 2));
 
             Panel.SetZIndex(ellipse, 5);
+            Panel.SetZIndex(values, 5);
             canvas.Children.Add(ellipse);
+            canvas.Children.Add(values);
         }
 
         public static void CreateNodeArt(double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0) => CreateNodeArt(canvas, xValue, yValue, red, green, blue);
@@ -195,6 +206,7 @@ namespace CarsAndTrains.Classes
 
             using (StreamReader streamReader = File.OpenText(path))
             {
+                int i = 0;
                 string readLine = "";
                 while ((readLine = streamReader.ReadLine()) != null)
                 {
@@ -214,24 +226,30 @@ namespace CarsAndTrains.Classes
                         trainNodes.Add(trainNode);
                     }
 
+                    if (drawNodes)
+                        CreateNodeArt(canvas, xValue, yValue, 255, (byte)(triggeringNode * ALPHA_FULL), 128, i);
+                    i++;
 
-                    if (!drawNodes)
-                        continue;
-                    CreateNodeArt(xValue, yValue, 255, (byte)(triggeringNode * ALPHA_FULL), 128);
                 }
             }
 
-            for (int i = 0; i < trainNodes.Count; i++)
-            {
-                Node node = trainNodes[i];
+            ForceTrainNodeCalculation();
+        }
 
-                if ((i + 1) >= trainNodes.Count)
-                    node.CalculateVector(trainNodes[0]);
-                else
+        private static void ForceTrainNodeCalculation()
+        {
+            lock (trainNodes)
+            {
+                for (int i = 0; i < trainNodes.Count - 1; i++)
+                {
+                    Node node = trainNodes[i];
                     node.CalculateVector(trainNodes[i + 1]);
 
-                Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
+                    Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
+                }
+                trainNodes[trainNodes.Count- 1].CalculateVector(trainNodes[trainNodes.Count - 1]);
             }
+
         }
 
         private static void CreateTrainsPool()
@@ -255,14 +273,14 @@ namespace CarsAndTrains.Classes
                 train.ActualPosition = trainNodes[0].GetNodePosition();
                 //assign first grahpic to the car
                 train.CurrentGraphics = trainsBitmaps[(int)Enums.GraphicDirection.RIGHT];
-                
+
 
                 trains.Add(train);
 
                 Image trainImage = new Image
                 {
-                    Width = Car.CAR_WIDTH,
-                    Height = Car.CAR_HEIGHT,
+                    Width = Car.CAR_WIDTH * 10,
+                    Height = Car.CAR_HEIGHT + 10,
                     Source = train.CurrentGraphics
                 };
 
@@ -345,6 +363,7 @@ namespace CarsAndTrains.Classes
                     }
                 }
         }
+
         public static void UpdateAllCars()
         {
             lock (cars) lock (carsArt)
@@ -366,7 +385,7 @@ namespace CarsAndTrains.Classes
                         car.UpdateVehicle();
 
 
-                        if (!car.IsVisible)
+                        if (!car.IsVisible || !drawCars)
                             continue;
 
                         MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car));
@@ -396,11 +415,25 @@ namespace CarsAndTrains.Classes
             };
         }
 
+        #endregion
+
         public static void ReverseTrainPath(Train train)
         {
-            return;
-            train.CounterNodes = trainNodes.Count;
-            invertedTrainRoute = !invertedTrainRoute;
+            lock (train)
+            {
+                if (train.CounterNodes != 0)
+                    return;
+
+                Debug.WriteLine("Reactivating Train");
+                //if (invertedTrainRoute)
+                //    ForceTrainNodeLeftHandCalculation();
+                //else
+                //    ForceTrainNodeRightHandCalculation();
+
+                train.CounterNodes = trainNodes.Count - 1;
+                //invertedTrainRoute = !invertedTrainRoute;
+                train.CanMove = true;
+            }
         }
 
         private static void ReincarnateVehicle(Vehicle vehicle)
@@ -410,8 +443,6 @@ namespace CarsAndTrains.Classes
             vehicle.GetNewGraphic();
         }
 
-
-        #endregion
 
         private static bool DidAllCarsArrive()
         {
@@ -487,17 +518,19 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static Node GetTrainNode(int rawCurrentlyUsedNode)
+        public static Node GetTrainNode(int nodesLeftToTravel)
         {
             lock (trainNodes)
             {
-                int currentNodeIndex = invertedTrainRoute ? trainNodes.Count() - rawCurrentlyUsedNode : rawCurrentlyUsedNode;
+                //int currentNodeIndex = trainNodes.Count() - nodesLeftToTravel;
+                int currentNodeIndex = invertedTrainRoute ? trainNodes.Count() - nodesLeftToTravel : nodesLeftToTravel;
 
+                //Debug.WriteLine($"Current -> {currentNodeIndex} | {invertedTrainRoute}");
                 if (currentNodeIndex < 0)
                     currentNodeIndex = 0;
                 if (currentNodeIndex > trainNodes.Count() - 1)
                     currentNodeIndex = trainNodes.Count() - 1;
-
+                //Debug.WriteLine($"Current -> {currentNodeIndex} | {invertedTrainRoute}");
                 return trainNodes[currentNodeIndex];
             }
         }
@@ -529,16 +562,16 @@ namespace CarsAndTrains.Classes
         {
             lock (directions)
             {
-                int selectedDirection = 0;
-                for (int i = 0; i < VEHICLE_DIRECTIONS; i++)
+                int selectedDirection = (int)Enums.GraphicDirection.RIGHT;
+                for (int i = 0; i < VEHICLE_DIRECTIONS / 2; i++)
                 {
-                    if (!IsInBetween(normalizedX, directions[i, 0], directions[i, 1]))
+                    if (!IsInBetween(normalizedX, directions[i % 2, 0], directions[i % 2, 1]))
                         continue;
 
-                    if (!IsInBetween(normalizedY, directions[i, 2], directions[i, 3]))
+                    if (!IsInBetween(normalizedY, directions[i % 2, 2], directions[i % 2, 3]))
                         continue;
 
-                    selectedDirection = i;
+                    selectedDirection = i % 2;
                     break;
                 }
                 //Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");

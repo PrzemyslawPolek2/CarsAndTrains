@@ -40,7 +40,7 @@ namespace CarsAndTrains
         {
             threads = new List<Controller>
             {
-                //new CarsController(),
+                new CarsController(),
                 new TrainController()
             };
         }

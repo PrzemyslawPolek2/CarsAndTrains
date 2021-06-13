@@ -7,6 +7,7 @@ namespace CarsAndTrains.Classes.Nodes
     public class Node
     {
         #region Fields
+        public const double NODE_SIZE = 20;
         public bool CanGoThrough { get; set; }
         protected Point Position { get; set; }
         private bool isActive;
@@ -40,32 +41,46 @@ namespace CarsAndTrains.Classes.Nodes
         #endregion
 
         #region Methods
+        public void CalculateVector() //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
+        {
+            Vector.SetNormalized(0, 0);
+            return;
+        }
+
         public void CalculateVector(Node nextNode) //funkja obliczająca długość między dwoma node'ami na mapie - obecnym oraz następnym
         {
-            double xVector, yVector, finalVector;
-
+            double xDifferenceSquared;
+            double yDifferenceSquared; 
+            double vectorLength;
 
             //Długość wektora jest obliczana ze wzoru |AB| = PIERWIASTEK[(Xb - Xa)^2 + (Yb - Ya)^2]
             //gdzie B oznacza Node wysłany jako parametr funkcji, zaś A - this.Node
             //finalVector jest zmienną przechowującą długość wektora pomiędzy punktami A i B
             //Wykorzystujemy również znormalizowane długości w celu obliczenia stosunku przesunięcia między node'ami w płaszczyźnie XY
 
-            xVector = Math.Pow((nextNode.Position.X - this.Position.X), 2);
-            yVector = Math.Pow((nextNode.Position.Y - this.Position.Y), 2);
-            finalVector = Math.Sqrt(xVector + yVector);
+            xDifferenceSquared = Math.Pow((nextNode.Position.X - this.Position.X), 2);
+            yDifferenceSquared = Math.Pow((nextNode.Position.Y - this.Position.Y), 2);
 
-            Vector = new PositionVector(Position.X, Position.Y, finalVector);
+            vectorLength = Math.Sqrt(xDifferenceSquared + yDifferenceSquared);
 
-            xVector = nextNode.Position.X - this.Position.X;
-            yVector = nextNode.Position.Y - this.Position.Y;
-            if (finalVector == 0)
-                finalVector = 1;
-            Point normalizedPosition = new Point
+            Vector = new PositionVector(Position.X, Position.Y, vectorLength);
+
+            double xValue = nextNode.Position.X - this.Position.X;
+            double yValue = nextNode.Position.Y - this.Position.Y;
+
+            //it's the same node
+            if (vectorLength == 0)
             {
-                X = xVector / finalVector,
-                Y = yVector / finalVector
+                Vector.SetNormalized(0, 0);
+                return;
+            }
+
+            Point magnitudeVector = new Point
+            {
+                X = xValue / vectorLength,
+                Y = yValue / vectorLength
             };
-            Vector.SetNormalized(normalizedPosition.X, normalizedPosition.Y);
+            Vector.SetNormalized(magnitudeVector.X, magnitudeVector.Y);
         }
         #endregion
 

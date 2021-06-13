@@ -75,6 +75,7 @@ namespace CarsAndTrains.Classes.Vehicles
 
             if (CanColide)
                 LimitSpeedByVehicleDistance();
+            Debug.WriteLine($"{CurrentSpeed}");
             //apply movement
             MoveVehicleForward();
 
@@ -109,6 +110,7 @@ namespace CarsAndTrains.Classes.Vehicles
             if (DistanceToTravel - TraveledDistance < _currentSpeed)
                 _currentSpeed -= DistanceToTravel - TraveledDistance;
             //apply to position
+            Debug.WriteLine($"{positionVector.NormalizedX} {positionVector.NormalizedY}");
             double xValue = _currentSpeed * positionVector.NormalizedX;
             double yValue = _currentSpeed * positionVector.NormalizedY;
 

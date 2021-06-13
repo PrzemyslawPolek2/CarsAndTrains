@@ -25,31 +25,30 @@ namespace CarsAndTrains.Classes.Vehicles
                 return;
 
             //apply movement
-            Debug.WriteLine($"PRE\t{ActualPosition.X} {ActualPosition.Y}");
             MoveVehicleForward();
-            Debug.WriteLine($"POST\t{ActualPosition.X} {ActualPosition.Y}");
 
             bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
             if (didAriveToNode)
                 UpdateNode();
 
-            Debug.WriteLine($"VEC\t{positionVector.NormalizedX} {positionVector.NormalizedY}");
-            if (CounterNodes == 0)
-            {
-                CanMove = false;
-                PublicAvaliableReferences.ReverseTrainPath(this);
-                Debug.WriteLine("Stopped");
-            }
+            
         }
         public override void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextTrainGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
 
         protected override void UpdateNode()
         {
             //reducing count of nodes left
+            if (CounterNodes == 0)
+            {
+                CanMove = false;
+                PublicAvaliableReferences.ReverseTrainPath(this);
+            }
+
             CounterNodes--;
             Node nextNode = PublicAvaliableReferences.GetTrainNode(CounterNodes);
             if (nextNode is null)
                 return;
+            Debug.WriteLine(CounterNodes);
 
             if (nextNode is TrainTriggerNode triggerNode)
                 triggerNode.TriggerTurnpike();
