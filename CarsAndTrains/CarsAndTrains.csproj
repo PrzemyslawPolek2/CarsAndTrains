@@ -57,8 +57,12 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\CarsController.cs" />
     <Compile Include="Classes\Controllers\Controller.cs" />
-    <Compile Include="Classes\Controllers\TrainController.cs" />
-    <Compile Include="Classes\Nodes\Turnpike.cs" />
+    <Compile Include="Classes\Controllers\DisplayController.cs" />
+    <Compile Include="Classes\Controllers\TrainsController.cs" />
+    <Compile Include="Classes\Controllers\TurnpikesController.cs" />
+    <Compile Include="Classes\Objects\LightFactory.cs" />
+    <Compile Include="Classes\Objects\Turnpike.cs" />
+    <Compile Include="Classes\Objects\TurnpikeFactory.cs" />
     <Compile Include="Classes\PositionVector.cs" />
     <Compile Include="Classes\PublicAvaliableReferences.cs" />
     <Compile Include="Classes\Vehicles\Car.cs" />
@@ -79,11 +83,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ObjectsDisplayWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Nodes\Light.cs" />
+    <Compile Include="Classes\Objects\Light.cs" />
     <Compile Include="Classes\Nodes\Node.cs" />
     <Compile Include="Classes\Nodes\TrainTriggerNode.cs" />
+    <Compile Include="ObjectsDisplayWindow.xaml.cs">
+      <DependentUpon>ObjectsDisplayWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -130,6 +141,20 @@
     <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_0_1.png" />
     <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_1_0.png" />
     <Resource Include="Resources\Images\Objects\Turnpikes\turnpike_1_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Trains\train_0.png" />
+    <Resource Include="Resources\Images\Trains\train_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Cars\car_0.png" />
+    <Resource Include="Resources\Images\Cars\car_1.png" />
+    <Resource Include="Resources\Images\Cars\car_2.png" />
+    <Resource Include="Resources\Images\Cars\car_3.png" />
+    <Resource Include="Resources\Images\Cars\car_4.png" />
+    <Resource Include="Resources\Images\Cars\car_5.png" />
+    <Resource Include="Resources\Images\Cars\car_6.png" />
+    <Resource Include="Resources\Images\Cars\car_7.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

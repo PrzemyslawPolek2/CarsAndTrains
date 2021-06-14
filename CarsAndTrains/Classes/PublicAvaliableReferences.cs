@@ -1,4 +1,5 @@
 ﻿using CarsAndTrains.Classes.Nodes;
+using CarsAndTrains.Classes.Objects;
 using CarsAndTrains.Classes.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -17,56 +18,78 @@ namespace CarsAndTrains.Classes
 {
     class PublicAvaliableReferences
     {
-        protected static Canvas canvas;
+        public static bool DrawNodes {get;set;}= false;
 
-        //Cars
-        protected static List<Car> cars;
+        #region Cars
+        public static bool DrawCars { get; set; } = true;
+        public static List<Car> cars;
         protected static List<Image> carsArt;
-
-        //Trains
-        protected static List<Train> trains;
-        protected static List<Image> trainsArt;
-
-        //Nodes
         protected static List<Node> carNodes;
-        protected static List<Node> trainNodes;
-
-        protected static BitmapImage[] carsBitmaps = new BitmapImage[8];
-        protected static BitmapImage[] trainsBitmaps = new BitmapImage[8];
-
 
         public const string CAR_NODES_FILE_NAME = "/nodePositions.txt";
+        public const string CAR_RESOURCES_FOLDER = @"\Resources\Images\Cars\";
+        public const string CAR_IMAGE_PREFIX = "car_";
+
+        protected const int SPAWN_CAR_LIMIT = 8;
+        protected const int CAR_DIRECTIONS = 8;
+
+        protected static BitmapImage[] carsBitmaps = new BitmapImage[8];
+        #endregion
+
+        #region Trains
+        public static bool DrawTrains {get;set;}= true;
+        public static List<Train> trains;
+        protected static List<Image> trainsArt;
+        protected static List<Node> trainNodes;
+
         public const string TRAIN_NODES_FILE_NAME = "/trainNodesPositions.txt";
-        public const string CAR_RESOURCES_FOLDER = @"\Resources\Images\Cars\Blue\";
+        public const string TRAIN_RESOURCES_FOLDER = @"\Resources\Images\Trains\";
+        public const string TRAIN_IMAGE_PREFIX = "train_";
+
+        protected const int TRAIN_DIRECTIONS = 2;
+        protected const int SPAWN_TRAIN_LIMIT = 1;
+
+        protected static BitmapImage[] trainsBitmaps = new BitmapImage[2];
+        #endregion
+
+        #region Lights and Turnpikes
+
+        public static List<Light> lights;
+        protected static List<Image> lightsArt;
+        public const string LIGHT_RESOURCES_FOLDER = @"\Resources\Images\Objects\Lights\";
+        public const string LIGHT_IMAGE_PREFIX = "lights_";
+
+        public static List<Turnpike> turnpikes;
+        protected static List<Image> turnpikesArt;
+        public const string TURNPIKE_RESOURCES_FOLDER = @"\Resources\Images\Objects\Turnpikes\";
+        public const string TURNPIKE_IMAGE_PREFIX = "turnpike_";
+
+        #endregion
+
+        protected static Canvas canvas;
 
         public const float TICK_VALUE = 1.0f;
         public const int ALPHA_FULL = 255;
 
-        private const int SPAWN_CAR_LIMIT = 6;
-        private const int SPAWN_TRAIN_LIMIT = 1;
 
-        private const float DEATH_TICK_VALUE = 1.0f;
-        private const int SPAWN_DELAY = 200;
-        private const int VEHICLE_DIRECTIONS = 8;
-        private static int railsNodeIndex = 12;
+        protected const float DEATH_TICK_VALUE = 1.0f;
+        protected const int SPAWN_DELAY = 200;
+        protected static int RailsNodeIndex = 12;
 
-        private static bool drawNodes = true;
-        private static bool drawCars = true;
-        private static bool drawTrains = true;
 
         private static readonly float[,] directions =
         {
             // Y value goes higher the lower you are, so the Y value has to be inversed
 
             //X-min      X-max      Y-min       Y-max
-            {-.50f,     .5f,       -.5f,       -1.0f},      // UP
-            {-.25f,    .00f,     -.25f,      -1.0f},        // UP_RIGHT
-            {-.00f,     -.5f,      .5f,      -0.5f},        // RIGHT
-            {-.75f,     .0f,     .25f,     1.0f},           // DOWN_RIGHT
-            {-.50f,     .5f,       .5f,      1.0f},         // DOWN
-            {.00f,     .75f,      .25f,     1.0f},          // DOWN_LEFT
-            {.50f,      .0f,       .5f,      -0.5f},        // LEFT
-            {.00f,      .75f,      -.25f,      -1.0f},      // UP_LEFT
+            {-.50f,     0.50f,      -.75f,       -1.00f},      // UP
+            {0.00f,     0.75f,      -.00f,       -.75f},      // UP_RIGHT
+            {0.75f,     1.0f,       0.50f,       -0.50f},      // RIGHT
+            {0.00f,     0.75f,      0.00f,       0.75f},       // DOWN_RIGHT
+            {-.50f,     0.50f,      0.75f,       1.00f},       // DOWN
+            {-.75f,     0.00f,      0.00f,       0.75f},       // DOWN_LEFT
+            {-1.0f,     -.75f,      0.50f,       -0.50f},      // LEFT
+            {-.75f,     0.00f,      -.00f,       -.75f},       // UP_LEFT
         };
 
         public static bool IsCarPoolFinished { get; protected set; }
@@ -80,7 +103,6 @@ namespace CarsAndTrains.Classes
             CreateBitmapImages();
             CreateNodes();
             CreatePools();
-            //ForceNodeCalculation();
         }
 
         private static void CreateNodes()
@@ -93,20 +115,43 @@ namespace CarsAndTrains.Classes
         {
             CreateCarsPool();
             CreateTrainsPool();
+            CreateLightsPool();
+            CreateTurnpikesPool();
         }
 
         private static void CreateBitmapImages()
         {
-            //TODO: asign graphics
-            string path = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(Directory.GetCurrentDirectory()));
-            path += $"{CAR_RESOURCES_FOLDER}car_";
+            string defaultFolderPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(Directory.GetCurrentDirectory()));
             string fileExtension = ".png";
+            string path;
 
-            for (int i = 0; i < VEHICLE_DIRECTIONS; i++)
+            //Cars
+            path = $"{defaultFolderPath}{CAR_RESOURCES_FOLDER}{CAR_IMAGE_PREFIX}";
+            for (int i = 0; i < CAR_DIRECTIONS; i++)
             {
-                carsBitmaps[i] = new BitmapImage(new Uri($"{path}{((int)Enums.GraphicDirection.RIGHT)}{fileExtension}"));
+                carsBitmaps[i] = new BitmapImage(new Uri($"{path}{i}{fileExtension}"));
+            }
+
+            //Trains           
+            path = $"{defaultFolderPath}{TRAIN_RESOURCES_FOLDER}{TRAIN_IMAGE_PREFIX}";
+            for (int i = 0; i < TRAIN_DIRECTIONS; i++)
+            {
                 trainsBitmaps[i] = new BitmapImage(new Uri($"{path}{i}{fileExtension}"));
             }
+
+            //Lights          
+            path = $"{defaultFolderPath}{LIGHT_RESOURCES_FOLDER}{LIGHT_IMAGE_PREFIX}";
+            Light.LightsOff = new BitmapImage(new Uri($"{path}{0}{fileExtension}"));
+            Light.LightsOn[0] = new BitmapImage(new Uri($"{path}{1}{fileExtension}"));
+            Light.LightsOn[1] = new BitmapImage(new Uri($"{path}{2}{fileExtension}"));
+
+            //Turnpikes
+            path = $"{defaultFolderPath}{TURNPIKE_RESOURCES_FOLDER}{TURNPIKE_IMAGE_PREFIX}";
+            Turnpike.TurnpikeGraphic[0,0] = new BitmapImage(new Uri($"{path}{0}_{0}{fileExtension}"));
+            Turnpike.TurnpikeGraphic[0,1] = new BitmapImage(new Uri($"{path}{0}_{1}{fileExtension}"));
+            Turnpike.TurnpikeGraphic[1,0] = new BitmapImage(new Uri($"{path}{1}_{0}{fileExtension}"));
+            Turnpike.TurnpikeGraphic[1,1] = new BitmapImage(new Uri($"{path}{1}_{1}{fileExtension}"));
+
         }
 
         private static void CreateCarsNodes()
@@ -126,7 +171,7 @@ namespace CarsAndTrains.Classes
                     float xValue = float.Parse(values[0]);
                     float yValue = float.Parse(values[1]);
                     carNodes.Add(new Node(new Point(xValue, yValue)));
-                    if (!drawNodes)
+                    if (!DrawNodes)
                         continue;
                     CreateNodeArt(xValue, yValue);
                 }
@@ -176,7 +221,7 @@ namespace CarsAndTrains.Classes
                         trainNodes.Add(trainNode);
                     }
 
-                    if (drawNodes)
+                    if (DrawNodes)
                         CreateNodeArt(canvas, xValue, yValue, 255, (byte)(triggeringNode * ALPHA_FULL), 128, i);
                     i++;
 
@@ -192,7 +237,6 @@ namespace CarsAndTrains.Classes
                 }
                 else
                     node.CalculateVector(trainNodes[i + 1]);
-                Debug.WriteLine($"{node.Vector.NormalizedX} {node.Vector.NormalizedY}");
             }
             //ForceTrainNodeCalculation();
         }
@@ -212,25 +256,26 @@ namespace CarsAndTrains.Classes
                 }
             };
 
-            //TextBlock values = new TextBlock
-            //{
-            //    Text = text,
-            //    TextAlignment = TextAlignment.Center,
-            //    FontSize = 10,
-            //};
+            TextBlock values = new TextBlock
+            {
+                Text = nodeInddex == -1 ? "" : $"{nodeInddex}",
+                TextAlignment = TextAlignment.Center,
+                FontSize = 10,
+            };
             Canvas.SetLeft(ellipse, xValue);
             Canvas.SetTop(ellipse, yValue);
-            //Canvas.SetLeft(values, xValue + Node.NODE_SIZE / 2);
-            //Canvas.SetTop(values, yValue + (Node.NODE_SIZE / 2));
+            Canvas.SetLeft(values, xValue + Node.NODE_SIZE / 2);
+            Canvas.SetTop(values, yValue + (Node.NODE_SIZE / 2));
 
             Panel.SetZIndex(ellipse, 5);
-            //Panel.SetZIndex(values, 5);
+            Panel.SetZIndex(values, 5);
             canvas.Children.Add(ellipse);
-            //canvas.Children.Add(values);
+            canvas.Children.Add(values);
         }
 
         public static void CreateNodeArt(double xValue, double yValue, byte red = 128, byte green = 255, byte blue = 0) => CreateNodeArt(canvas, xValue, yValue, red, green, blue);
 
+        #region Pools
 
         private static void CreateTrainsPool()
         {
@@ -251,23 +296,23 @@ namespace CarsAndTrains.Classes
                 Train train = TrainFactory.Create(nodesCount, nextIndex);
                 //set first node as car's stariting position
                 train.ActualPosition = trainNodes[0].GetNodePosition();
-                //assign first grahpic to the car
-                train.CurrentGraphics = trainsBitmaps[(int)Enums.GraphicDirection.RIGHT];
-
+                //assign first grahpic to the train
+                train.CurrentGraphics = trainsBitmaps[1];
 
                 trains.Add(train);
 
                 Image trainImage = new Image
                 {
-                    Width = Car.CAR_WIDTH * 10,
-                    Height = Car.CAR_HEIGHT + 10,
+                    Width = Train.TRAIN_WIDTH,
+                    Height = Train.TRAIN_HEIGHT,
                     Source = train.CurrentGraphics
                 };
 
 
-                Panel.SetZIndex(trainImage, 10);
-                canvas.Children.Add(trainImage);
                 trainsArt.Add(trainImage);
+                Panel.SetZIndex(trainImage, 5);
+                canvas.Children.Add(trainImage);
+
                 MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
             }
         }
@@ -318,6 +363,84 @@ namespace CarsAndTrains.Classes
             }
         }
 
+        private static void CreateTurnpikesPool()
+        {
+            if (turnpikes is null)
+                turnpikes = new List<Turnpike>();
+            if (turnpikesArt is null)
+                turnpikesArt = new List<Image>();
+
+            TurnpikeFactory.Initialize();
+            //80 360
+
+
+            Turnpike lightsTop = TurnpikeFactory.Create(new Point(50, 330));
+            Turnpike lightsBottom = TurnpikeFactory.Create(new Point(60, 390), true);
+
+            Image leftTurnpikeImage = new Image
+            {
+                Source = lightsTop.CurrentGraphic,
+                Width = 140,
+            }; 
+            Image rightTurnpikeImage = new Image
+            {
+                Source = lightsBottom.CurrentGraphic,
+                Width = 140,
+            };
+
+            turnpikes.Add(lightsTop);
+            turnpikes.Add(lightsBottom);
+            turnpikesArt.Add(leftTurnpikeImage);
+            turnpikesArt.Add(rightTurnpikeImage);
+            canvas.Children.Add(leftTurnpikeImage);
+            canvas.Children.Add(rightTurnpikeImage);
+            Canvas.SetLeft(leftTurnpikeImage, lightsTop.ActualPosition.X);
+            Canvas.SetTop(leftTurnpikeImage, lightsTop.ActualPosition.Y);
+            Canvas.SetZIndex(leftTurnpikeImage, 5);
+            Canvas.SetLeft(rightTurnpikeImage, lightsBottom.ActualPosition.X);
+            Canvas.SetTop(rightTurnpikeImage, lightsBottom.ActualPosition.Y);
+            Canvas.SetZIndex(rightTurnpikeImage, 10);
+        }
+
+        private static void CreateLightsPool()
+        {
+            if (lights is null)
+                lights = new List<Light>();
+            if (lightsArt is null)
+                lightsArt = new List<Image>();
+
+            TurnpikeFactory.Initialize();
+            //80 360
+
+            Light lightsTop = LightFactory.Create(new Point(160, 350));
+            Light rightTurnpike = LightFactory.Create(new Point(20, 410));
+
+            Image leftTurnpikeImage = new Image
+            {
+                Source = lightsTop.CurrentGraphic,
+                Width = 80,
+            };
+            Image rightTurnpikeImage = new Image
+            {
+                Source = rightTurnpike.CurrentGraphic,
+                Width = 80,
+            };
+
+            lights.Add(lightsTop);
+            lights.Add(rightTurnpike);
+            lightsArt.Add(leftTurnpikeImage);
+            lightsArt.Add(rightTurnpikeImage);
+            canvas.Children.Add(leftTurnpikeImage);
+            canvas.Children.Add(rightTurnpikeImage);
+            Canvas.SetLeft(leftTurnpikeImage, lightsTop.ActualPosition.X);
+            Canvas.SetTop(leftTurnpikeImage, lightsTop.ActualPosition.Y);
+            Canvas.SetZIndex(leftTurnpikeImage, 5);
+            Canvas.SetLeft(rightTurnpikeImage, rightTurnpike.ActualPosition.X);
+            Canvas.SetTop(rightTurnpikeImage, rightTurnpike.ActualPosition.Y);
+            Canvas.SetZIndex(rightTurnpikeImage, 10);
+        }
+        #endregion
+
         #endregion
 
         #region Updates
@@ -332,17 +455,16 @@ namespace CarsAndTrains.Classes
                         if (!train.IsActive)
                         {
                             train.DeathAfterArivalTime -= DEATH_TICK_VALUE;
-                            if(train.DeathAfterArivalTime <= 0.0f)
-                            {
-                                ReincarnateTrain(train);
-                            }
-                            continue;
+                            if (train.DeathAfterArivalTime > 0.0f)
+                                continue;
+
+                            ReincarnateTrain(train);
                         }
 
                         train.UpdateVehicle();
 
-                        //if (!train.IsVisible)
-                        //    continue;
+                        if (!train.IsVisible || !DrawTrains)
+                            continue;
                         MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
                     }
                 }
@@ -369,7 +491,7 @@ namespace CarsAndTrains.Classes
                         car.UpdateVehicle();
 
 
-                        if (!car.IsVisible || !drawCars)
+                        if (!car.IsVisible || !DrawCars)
                             continue;
 
                         MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(carsArt[i], car));
@@ -379,18 +501,41 @@ namespace CarsAndTrains.Classes
                 }
         }
 
+        public static void UpdateAllTurnpikes(bool turnpikeStatus)
+        {
+            lock (turnpikes)
+            {
+                for(int i = 0; i < turnpikes.Count; i++)
+                {
+                    Turnpike turnpike = turnpikes[i];
+                    turnpike.Opened = turnpikeStatus;
+                    turnpike.Update();
+
+                    MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(turnpikesArt[i], turnpike.CurrentGraphic));
+                }
+            }
+        }
+
+        public static void UpdateAllLights(bool turnpikeStatus)
+        {
+            for (int i = 0; i < lights.Count; i++)
+            {
+                Light light = lights[i];
+                light.SetStatus(turnpikeStatus);
+                light.Update();
+                MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(lightsArt[i], light.CurrentGraphic));
+            }
+        }
+        private static Action UpdateOnCanvas(Image image, BitmapImage newImage)
+        {
+            return () =>
+            {
+                image.Source = newImage;
+            };
+        }
+
         private static Action UpdateOnCanvas(Image image, Vehicle vehicle)
         {
-            if (vehicle is Train train)
-            {
-                return () =>
-                {
-                    image.Source = train.CurrentGraphics;
-                    Canvas.SetLeft(image, train.ActualPosition.X);
-                    Canvas.SetTop(image, train.ActualPosition.Y);
-                };
-            }
-
             return () =>
             {
                 image.Source = vehicle.CurrentGraphics;
@@ -405,9 +550,10 @@ namespace CarsAndTrains.Classes
         {
             lock (train)
             {
+                //train = TrainFactory.Create(trainNodes.Count, train.NextVehicleIndex);
                 train.DeathAfterArivalTime = TrainFactory.DEATH_TIME;
-                train.ResetPosition();
                 train.CounterNodes = trainNodes.Count;
+                train.ResetPosition();
                 train.UpdatePositionVector(train.CounterNodes);
                 train.CanMove = true;
                 train.IsActive = true;
@@ -450,16 +596,18 @@ namespace CarsAndTrains.Classes
             lock (cars)
             {
                 if (!BasicChecksForVehicle(thisVehicle))
+                {
                     return false;
+                }
 
                 Vehicle nextCar = cars[thisVehicle.NextVehicleIndex];
 
                 //calculate distance between two vehicles
-                double nextVehicleBack = nextCar.TraveledDistance - (nextCar.WidthGraphics / 2);
-                double thisVehicleFront = thisVehicle.TraveledDistance + (thisVehicle.WidthGraphics / 2);
+                double nextVehicleBack = nextCar.TraveledDistance;
+                double thisVehicleFront = thisVehicle.TraveledDistance;
                 double differenceInDistance = Math.Abs(nextVehicleBack - thisVehicleFront);
-                Debug.WriteLine($"{((Car)nextCar).carID} - {((Car)thisVehicle).carID} | {differenceInDistance}");
-                return (differenceInDistance < Vehicle.VEHICLE_DISTANCE_OFFSET);
+                bool areTooClose = differenceInDistance < Vehicle.VEHICLE_DISTANCE_OFFSET;
+                return areTooClose;
             }
         }
 
@@ -491,22 +639,24 @@ namespace CarsAndTrains.Classes
         {
             lock (nodesArray)
             {
-                int currentNodeIndex = nodesArray.Count() - index;
+                index--;
+                int currentNodeIndex = nodesArray.Count() - 1 - index;
 
                 if (currentNodeIndex < 0)
-                    currentNodeIndex = 0;
+                    return null;
                 if (currentNodeIndex > nodesArray.Count() - 1)
-                    currentNodeIndex = nodesArray.Count() - 1;
+                    return null;
                 return nodesArray[currentNodeIndex];
             }
         }
 
-        public static BitmapImage GetNextGraphic(double normalizedX, double normalizedY)
+        public static BitmapImage GetNextCarGraphic(double normalizedX, double normalizedY)
         {
             lock (directions)
             {
-                int selectedDirection = 0;
-                for (int i = 0; i < VEHICLE_DIRECTIONS; i++)
+                bool determined = false;
+                int selectedDirection = (int)Enums.GraphicDirection.UP_RIGHT;
+                for (int i = 0; i < CAR_DIRECTIONS; i++)
                 {
                     if (!IsInBetween(normalizedX, directions[i, 0], directions[i, 1]))
                         continue;
@@ -515,12 +665,17 @@ namespace CarsAndTrains.Classes
                         continue;
 
                     selectedDirection = i;
+                    determined = true;
                     break;
                 }
-                //Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
-                //Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
-                //Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
-                return carsBitmaps[selectedDirection];
+
+                if (determined)
+                    return carsBitmaps[selectedDirection];
+                else
+                {
+                    int index = normalizedX >= 0.0f ? (int)Enums.GraphicDirection.RIGHT : (int)Enums.GraphicDirection.LEFT;
+                    return carsBitmaps[index];
+                }
             }
         }
 
@@ -528,22 +683,7 @@ namespace CarsAndTrains.Classes
         {
             lock (directions)
             {
-                int selectedDirection = (int)Enums.GraphicDirection.RIGHT;
-                for (int i = 0; i < VEHICLE_DIRECTIONS / 2; i++)
-                {
-                    if (!IsInBetween(normalizedX, directions[i % 2, 0], directions[i % 2, 1]))
-                        continue;
-
-                    if (!IsInBetween(normalizedY, directions[i % 2, 2], directions[i % 2, 3]))
-                        continue;
-
-                    selectedDirection = i % 2;
-                    break;
-                }
-                //Debug.WriteLine($"Graphic {(Enums.GraphicDirection)selectedDirection}");
-                //Debug.WriteLine($"NormalizedX  {directions[selectedDirection, 0]} {normalizedX} {directions[selectedDirection, 1]}");
-                //Debug.WriteLine($"NormalizedY  {directions[selectedDirection, 2]} {normalizedY} {directions[selectedDirection, 3]}");
-                return trainsBitmaps[selectedDirection];
+                return normalizedX <= 0 ? trainsBitmaps[0] : trainsBitmaps[1];
             }
         }
 
@@ -557,7 +697,6 @@ namespace CarsAndTrains.Classes
             }
 
             bool isInBetweenValues = (value >= smallerLimit & value <= biggerLimit);
-            //Debug.WriteLine($"\t {smallerLimit} <= {value} <= {biggerLimit} == {isInBetweenValues}");
             return isInBetweenValues;
         }
 
@@ -575,8 +714,14 @@ namespace CarsAndTrains.Classes
         {
             lock (carNodes)
             {
-                carNodes[railsNodeIndex].CanGoThrough = !carNodes[railsNodeIndex].CanGoThrough;
+                carNodes[RailsNodeIndex].CanGoThrough = !carNodes[RailsNodeIndex].CanGoThrough;
             }
         }
+
+        public static bool TurnPikeStatus()
+        {
+            return carNodes[RailsNodeIndex].CanGoThrough;
+        }
+
     }
 }

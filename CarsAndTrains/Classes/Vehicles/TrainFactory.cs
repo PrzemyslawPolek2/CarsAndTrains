@@ -4,7 +4,7 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public class TrainFactory
     {
-        public const double DEATH_TIME = 10.0f;
+        public const double DEATH_TIME = 100.0f;
         private const double SPEED_MAX_LIMIT = 3.5f;
         private const double SPEED_MIN_LIMIT = 3.5f;
 
@@ -18,7 +18,7 @@ namespace CarsAndTrains.Classes.Vehicles
 
         public static Train Create(int nodesCount, int nextVehicleIndex)
         {
-            Train train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex);
+            Train train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex, DEATH_TIME);
             return train;
         }
 

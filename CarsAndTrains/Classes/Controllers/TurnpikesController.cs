@@ -1,15 +1,18 @@
-﻿using System.Diagnostics;
-using System.Threading;
+﻿using System.Threading;
 
 namespace CarsAndTrains.Classes.Controllers
 {
-    class TrainController : Controller
+    public class TurnpikesController : Controller
     {
         protected override void RunThread()
         {
             do
             {
-                PublicAvaliableReferences.UpdateAllTrains();
+                bool turnpikeStatus = PublicAvaliableReferences.TurnPikeStatus();
+
+                PublicAvaliableReferences.UpdateAllTurnpikes(turnpikeStatus);
+                PublicAvaliableReferences.UpdateAllLights(turnpikeStatus);
+
                 Thread.Sleep(THREAD_TICK);
             } while (!PublicAvaliableReferences.IsCarPoolFinished);
 

@@ -4,8 +4,8 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public static class CarFactory
     {
-        private const double SPEED_MAX_LIMIT = 2.9f;
-        private const double SPEED_MIN_LIMIT = 0.6f;
+        private const double SPEED_MAX_LIMIT = 3.0f;
+        private const double SPEED_MIN_LIMIT = 1.5f;
 
         private const double DEATH_MAX_LIMIT = 20.0f;
         private const double DEATH_MIN_LIMIT = 10.0f;

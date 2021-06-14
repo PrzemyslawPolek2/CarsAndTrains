@@ -9,7 +9,7 @@ namespace CarsAndTrains.Classes.Vehicles
     public abstract class Vehicle
     {
 
-        public const double VEHICLE_DISTANCE_OFFSET = 40f;
+        public const double VEHICLE_DISTANCE_OFFSET = 60f;
         public const double NODE_DISTANCE_OFFSET = .5f;
         #region public fields
         public bool CanMove { get; set; }
@@ -80,10 +80,16 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             if (!IsActive)
                 return;
-            //GetNextNode będzie wysyłać parametr CounterNodes
+            
+            //get next node
             Node nextNode = GetNextNode(CounterNodes - 1);
+
+            if (nextNode == null)
+                return;
+
             if (!CanMove || !nextNode.CanGoThrough)
             {
+                CurrentSpeed = 0.0f;
                 return;
             }
 
@@ -101,11 +107,13 @@ namespace CarsAndTrains.Classes.Vehicles
         protected virtual void UpdateNode()
         {
             //reducing count of nodes left
-            CounterNodes--;
-            Node nextNode = GetNextNode(CounterNodes);
+            
+            Node nextNode = GetNextNode(CounterNodes - 1);
             if (nextNode is null)
                 return;
-
+            if (!nextNode.CanGoThrough)
+                return;
+            CounterNodes--;
             GetNewGraphic();
 
             positionVector = nextNode.Vector;
@@ -118,7 +126,7 @@ namespace CarsAndTrains.Classes.Vehicles
         }
 
         public virtual bool Arived() => CounterNodes == 0;
-        public virtual void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
+        public virtual void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextCarGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
         #endregion
         #region private methods
         protected virtual void MoveVehicleForward()

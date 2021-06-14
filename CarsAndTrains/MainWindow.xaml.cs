@@ -17,6 +17,7 @@ namespace CarsAndTrains
     public partial class MainWindow : Window
     {
         public static MainWindow GetMain;
+        public static ObjectsDisplayWindow infoWindow;
         public static List<Controller> threads;
 
         private const int NODE_SIZE = 20;
@@ -31,6 +32,8 @@ namespace CarsAndTrains
             if (CreateNode)
                 return;
             PublicAvaliableReferences.Initialize(canvas);
+            infoWindow = new ObjectsDisplayWindow();
+            infoWindow.Show();
             CreateThreads();
             StartThreads();
             this.Closing += MainWindow_Closing;
@@ -41,7 +44,9 @@ namespace CarsAndTrains
             threads = new List<Controller>
             {
                 new CarsController(),
-                new TrainController()
+                new TrainsController(),
+                new TurnpikesController(),
+                new DisplayController()
             };
         }
 
@@ -140,8 +145,10 @@ namespace CarsAndTrains
         {
             return canvas.Height;
         }
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) => AbortThreads();
-
-
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            infoWindow.Close();
+            AbortThreads();
+        }
     }
 }
