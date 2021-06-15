@@ -8,10 +8,10 @@ namespace CarsAndTrains.Classes.Controllers
         {
             do
             {
-                bool turnpikeStatus = PublicAvaliableReferences.GetTurnPikeStatus();
+                bool _turnpikeStatus = PublicAvaliableReferences.GetTurnPikeStatus();
 
-                PublicAvaliableReferences.UpdateAllTurnpikes(turnpikeStatus);
-                PublicAvaliableReferences.UpdateAllLights(turnpikeStatus);
+                PublicAvaliableReferences.UpdateAllTurnpikes(_turnpikeStatus);
+                PublicAvaliableReferences.UpdateAllLights(_turnpikeStatus);
 
                 Thread.Sleep(THREAD_TICK);
             } while (true);

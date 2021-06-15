@@ -22,8 +22,8 @@ namespace CarsAndTrains.Classes.Objects
         /// <returns></returns>
         public static Turnpike Create(Point position, bool left = false)
         {
-            Turnpike turnpike = new Turnpike(left, position);
-            return turnpike;
+            Turnpike _turnpike = new Turnpike(left, position);
+            return _turnpike;
         }
     }
 }

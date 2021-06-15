@@ -38,19 +38,19 @@ namespace CarsAndTrains.Classes.Vehicles
         protected override void UpdateNode()
         {
             //reducing count of nodes left
-            Node nextNode = GetNextNode(NodesLeftToTravel - 1);
-            if (nextNode is null)
+            Node _nextNode = GetNextNode(NodesLeftToTravel - 1);
+            if (_nextNode is null)
                 return;
-            if (!nextNode.CanGoTo)
+            if (!_nextNode.CanGoTo)
                 return;
 
-            if (nextNode is TrainTriggerNode triggerNode)
+            if (_nextNode is TrainTriggerNode triggerNode)
                 triggerNode.TriggerTurnpike();
 
             GetNewGraphic();
             NodesLeftToTravel--;
 
-            positionVector = nextNode.Vector;
+            positionVector = _nextNode.Vector;
             DistanceToTravel += positionVector.Length;
         }
         #endregion
@@ -74,10 +74,10 @@ namespace CarsAndTrains.Classes.Vehicles
 
         protected override Node GetNextNode(int index)
         {
-            Node nextNode = PublicAvaliableReferences.GetTrainNode(index);
-            if (nextNode == null)
+            Node _nextNode = PublicAvaliableReferences.GetTrainNode(index);
+            if (_nextNode == null)
                 IsActive = false;
-            return nextNode;
+            return _nextNode;
         }
         #endregion
 

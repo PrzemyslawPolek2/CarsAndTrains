@@ -52,14 +52,14 @@ namespace CarsAndTrains.Classes.Vehicles
                 IsReinacarnated = true;
             }
             //get next node
-            Node nextNode = GetNextNode(NodesLeftToTravel - 1);
-            if (nextNode == null)
+            Node _nextNode = GetNextNode(NodesLeftToTravel - 1);
+            if (_nextNode == null)
             {
                 return;
             }
 
             //if cannot move and doesn't ignore CanGoTo
-            if (!CanMove || (!nextNode.CanGoTo && !IgnoreNodeLimit))
+            if (!CanMove || (!_nextNode.CanGoTo && !IgnoreNodeLimit))
             {
                 CurrentSpeed = 0.0f;
                 return;
@@ -72,8 +72,8 @@ namespace CarsAndTrains.Classes.Vehicles
             //apply speed to position
             MoveVehicleForward();
 
-            bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
-            if (didAriveToNode)
+            bool _didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
+            if (_didAriveToNode)
             {
                 UpdateNode();
                 //Reset Node's CanGoTo ignorance
@@ -117,11 +117,11 @@ namespace CarsAndTrains.Classes.Vehicles
         }
         public override string ToString()
         {
-            string isActive = IsActive ? "Active" : "NotActive";
+            string _isActive = IsActive ? "Active" : "NotActive";
             if (IsActive)
-                return $"{isActive}\t {CarID:0}|{NextVehicleIndex:0}\t{CurrentSpeed:0.00}\t{CanMove}\t{CanColide}\t{IsVisible}\t{IsBehindVehicle}\t{IgnoreNodeLimit}\t{NodesLeftToTravel}\t{TraveledDistance / FullTravelDistance * 100:00}% {RelatvieTraveledDistance / RelativeDistanceToTravel * 100:00}% [{TraveledDistance:0000}->{DistanceToTravel:0000}] / {FullTravelDistance:0000}";
+                return $"{_isActive}\t {CarID:0}|{NextVehicleIndex:0}\t{CurrentSpeed:0.00}\t{CanMove}\t{CanColide}\t{IsVisible}\t{IsBehindVehicle}\t{IgnoreNodeLimit}\t{NodesLeftToTravel}\t{TraveledDistance / FullTravelDistance * 100:00}% {RelatvieTraveledDistance / RelativeDistanceToTravel * 100:00}% [{TraveledDistance:0000}->{DistanceToTravel:0000}] / {FullTravelDistance:0000}";
             else
-                return $"{isActive}\t {CarID:0}|{NextVehicleIndex:0}";
+                return $"{_isActive}\t {CarID:0}|{NextVehicleIndex:0}";
         }
     }
 }

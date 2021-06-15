@@ -74,12 +74,12 @@ namespace CarsAndTrains.Classes.Vehicles
                 return;
 
             //Get Next Node
-            Node nextNode = GetNextNode(NodesLeftToTravel - 1);
+            Node _nextNode = GetNextNode(NodesLeftToTravel - 1);
 
-            if (nextNode == null)
+            if (_nextNode == null)
                 return;
 
-            if (!CanMove || !nextNode.CanGoTo)
+            if (!CanMove || !_nextNode.CanGoTo)
             {
                 CurrentSpeed = 0.0f;
                 return;
@@ -94,8 +94,8 @@ namespace CarsAndTrains.Classes.Vehicles
             //Apply Speed to position
             MoveVehicleForward();
 
-            bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
-            if (didAriveToNode)
+            bool _didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
+            if (_didAriveToNode)
                 UpdateNode();
 
         }
@@ -137,12 +137,12 @@ namespace CarsAndTrains.Classes.Vehicles
             if (_currentSpeed > VehicleSpeed)
                 _currentSpeed = VehicleSpeed;
             //Apply to position
-            double xValue = _currentSpeed * positionVector.NormalizedX;
-            double yValue = _currentSpeed * positionVector.NormalizedY;
+            double _xValue = _currentSpeed * positionVector.NormalizedX;
+            double _yValue = _currentSpeed * positionVector.NormalizedY;
 
             this.ActualPosition = new Point(
-                this.ActualPosition.X + xValue,
-                this.ActualPosition.Y + yValue
+                this.ActualPosition.X + _xValue,
+                this.ActualPosition.Y + _yValue
                 );
 
             TraveledDistance += _currentSpeed;

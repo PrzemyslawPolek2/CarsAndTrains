@@ -27,8 +27,8 @@ namespace CarsAndTrains.Classes.Objects
         /// <returns></returns>
         public static Light Create(Point position)
         {
-            Light light = new Light(position);
-            return light;
+            Light _light = new Light(position);
+            return _light;
         }
     }
 }

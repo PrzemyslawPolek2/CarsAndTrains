@@ -30,8 +30,8 @@ namespace CarsAndTrains.Classes.Vehicles
         /// <returns></returns>
         public static Car Create(int nodesNumber, int nextVehicleIndex)
         {
-            Car car = new Car(RandomSpeedGenerator(), nodesNumber, RandomDeathGenerator(), nextVehicleIndex);
-            return car;
+            Car _car = new Car(RandomSpeedGenerator(), nodesNumber, RandomDeathGenerator(), nextVehicleIndex);
+            return _car;
         }
 
 

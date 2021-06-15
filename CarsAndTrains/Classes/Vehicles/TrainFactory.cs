@@ -29,8 +29,8 @@ namespace CarsAndTrains.Classes.Vehicles
         /// <returns></returns>
         public static Train Create(int nodesCount, int nextVehicleIndex)
         {
-            Train train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex, DEATH_TIME);
-            return train;
+            Train _train = new Train(RandomSpeedGenerator(), nodesCount, nextVehicleIndex, DEATH_TIME);
+            return _train;
         }
         /// <summary>
         /// Generates Random Speed between SPEED_MAX_LIMIT and SPEED_MIN_LIMIT
