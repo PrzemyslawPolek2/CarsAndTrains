@@ -22,32 +22,37 @@ namespace CarsAndTrains
         public static List<Controller> threads;
         public static int TickCounter = 0;
 
-        private const int NODE_SIZE = 20;
+        public static bool MouseNodeCreation = false;
+        public static bool MouseTrainNodeCreation = false;
+        public static bool MouseCarNodeCreation = false;
 
-        public static bool CreateNode = false;
-        public static bool CreateTrainNode = false;
-        public static bool CreateCarNode = false;
         public MainWindow()
         {
             GetMain = this;
             InitializeComponent();
-            if (CreateNode)
+
+            //If Creating Nodes, don't initialize PAR and Threads
+            if (MouseNodeCreation)
                 return;
+
+            //Initalize PAR (shared resources)
             PublicAvaliableReferences.Initialize(canvas);
-            InitializeDebugWindow();
+            InitializeInfoDisplay();
             CreateThreads();
             StartThreads();
+
             this.Closing += MainWindow_Closing;
         }
 
+        #region Threads
         private static void CreateThreads()
         {
             threads = new List<Controller>
             {
                 new CarsController(),
                 new TrainsController(),
-                new TurnpikesController(),
-                new DisplayController()
+                new TurnpikesAndLightsController(),
+                new VehiclesInfoController()
             };
         }
 
@@ -61,39 +66,56 @@ namespace CarsAndTrains
             foreach (Controller controller in threads)
                 controller.Start();
         }
+        #endregion
+
+        #region Canvas Mouse Down Events
         private void CanvasRightMouseDownEventHandler(object sender, MouseButtonEventArgs e)
         {
-            if (!CreateNode)
+            if (!MouseNodeCreation)
                 return;
             Point canvasPoint = Mouse.GetPosition(canvas);
-            SaveNewNode(canvasPoint, "1");
+            SaveNewNode(canvasPoint, Node.TRAIN_TRIGGER_NODE);
         }
 
         private void CanvasLeftMouseDownEventHandler(object sender, MouseButtonEventArgs e)
         {
-            if (!CreateNode)
+            if (!MouseNodeCreation)
                 return;
             Point canvasPoint = Mouse.GetPosition(canvas);
-            SaveNewNode(canvasPoint, "0");
+            SaveNewNode(canvasPoint, Node.NORMAL_NODE);
         }
+
+        #endregion
+
+        #region Create Nodes 
+
+        /// <summary>
+        /// Create new Node
+        /// </summary>
+        /// <param name="canvasPoint"> point at which new node is created</param>
+        /// <param name="trainTriggeringNode">1 if node is a triggernode, otherwise 0</param>
         private void SaveNewNode(Point canvasPoint, string trainTriggeringNode)
         {
-            double nodePositionX = (canvasPoint.X - (NODE_SIZE / 2));
-            double nodePositionY = (canvasPoint.Y - (NODE_SIZE / 2));
+            double nodePositionX = (canvasPoint.X - (Node.NODE_SIZE / 2));
+            double nodePositionY = (canvasPoint.Y - (Node.NODE_SIZE / 2));
 
             string positionsString = nodePositionX + " " + nodePositionY;
-            if (CreateCarNode)
+            if (MouseCarNodeCreation)
                 CreateCarNodePosition(positionsString);
-            if (CreateTrainNode)
+            if (MouseTrainNodeCreation)
                 CreateTrainNodePosition($"{positionsString} {trainTriggeringNode}");
             PublicAvaliableReferences.CreateNodeArt(this.canvas,
                                                     nodePositionX,
                                                     nodePositionY,
                                                     255,
-                                                    (byte)(int.Parse(trainTriggeringNode) * PublicAvaliableReferences.ALPHA_FULL),
+                                                    (byte)(int.Parse(trainTriggeringNode) * PublicAvaliableReferences.ALPHA),
                                                     0);
         }
 
+        /// <summary>
+        /// Creates a node record for trains in the trains.txt file
+        /// </summary>
+        /// <param name="positionsString">string containing position and IsTrainTriggerValue</param>
         private void CreateTrainNodePosition(string positionsString)
         {
             string path = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -115,7 +137,10 @@ namespace CarsAndTrains
                 }
             }
         }
-
+        /// <summary>
+        /// Creates a node record for cars in the cars.txt file
+        /// </summary>
+        /// <param name="positionsString">string containing position</param>
         private static void CreateCarNodePosition(string positionString)
         {
             string path = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -137,25 +162,38 @@ namespace CarsAndTrains
                 }
             }
         }
-        private void InitializeDebugWindow()
-        {
 
+        #endregion
+
+        /// <summary>
+        /// Initialiazes ListBoxes with the proper values
+        /// </summary>
+        private void InitializeInfoDisplay()
+        {
+            ///Cars
             List<Car> cars = PublicAvaliableReferences.cars;
             CarsLB.Items.Add(Car.Header());
             for (int i = 0; i < cars.Count; i++)
                 CarsLB.Items.Add(cars[i].ToString());
+            ///Trains
             List<Train> trains = PublicAvaliableReferences.trains;
             TrainsLB.Items.Add(Car.Header());
             for (int i = 0; i < trains.Count; i++)
                 TrainsLB.Items.Add(trains[i].ToString());
-            List<Node> carNodes = PublicAvaliableReferences.carNodes;
-            CarNodesLB.Items.Add(Node.Header());
-            for (int i = 0; i < carNodes.Count; i++)
-                CarNodesLB.Items.Add(carNodes[i].ToString());
+            ///Nodes
+            //List<Node> carNodes = PublicAvaliableReferences.carNodes;
+            //CarNodesLB.Items.Add(Node.Header());
+            //for (int i = 0; i < carNodes.Count; i++)
+            //    CarNodesLB.Items.Add(carNodes[i].ToString());
         }
+
+        #region LB Updates
 
         public void UpdateCarsLB()
         {
+            if (CarsLB.Items.Count == 0)
+                return;
+
             List<Car> cars = PublicAvaliableReferences.cars;
             for (int i = 0; i < cars.Count; i++)
             {
@@ -166,8 +204,11 @@ namespace CarsAndTrains
             }
 
         }
+
         public void UpdateTrainsLB()
         {
+            if (TrainsLB.Items.Count == 0)
+                return;
             List<Train> trains = PublicAvaliableReferences.trains;
             for (int i = 0; i < trains.Count; i++)
             {
@@ -178,14 +219,12 @@ namespace CarsAndTrains
             }
         }
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        public void UpdateCarNodesLB()
         {
-            AbortThreads();
-        }
+            if (CarNodesLB.Items.Count == 0)
+                return;
 
-        internal void UpdateCarNodesLB()
-        {
-            List<Node> carNodes= PublicAvaliableReferences.carNodes;
+            List<Node> carNodes = PublicAvaliableReferences.carNodes;
             for (int i = 0; i < carNodes.Count; i++)
             {
                 Dispatcher.Invoke(() =>
@@ -194,5 +233,13 @@ namespace CarsAndTrains
                 });
             }
         }
+
+        #endregion
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            AbortThreads();
+        }
+
     }
 }

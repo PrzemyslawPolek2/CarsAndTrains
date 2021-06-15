@@ -3,6 +3,9 @@ using System.Windows;
 
 namespace CarsAndTrains.Classes.Nodes
 {
+    /// <summary>
+    /// Variant of a normal Node, triggering a Turnpike once a vehicle interacts with it
+    /// </summary>
     class TrainTriggerNode : Node
     {
         #region Constructors

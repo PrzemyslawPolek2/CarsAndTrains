@@ -65,9 +65,9 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Controllers\CarsController.cs" />
     <Compile Include="Classes\Controllers\Controller.cs" />
-    <Compile Include="Classes\Controllers\DisplayController.cs" />
+    <Compile Include="Classes\Controllers\VehiclesInfoController.cs" />
     <Compile Include="Classes\Controllers\TrainsController.cs" />
-    <Compile Include="Classes\Controllers\TurnpikesController.cs" />
+    <Compile Include="Classes\Controllers\TurnpikesAndLightsController.cs" />
     <Compile Include="Classes\Objects\LightFactory.cs" />
     <Compile Include="Classes\Objects\Turnpike.cs" />
     <Compile Include="Classes\Objects\TurnpikeFactory.cs" />

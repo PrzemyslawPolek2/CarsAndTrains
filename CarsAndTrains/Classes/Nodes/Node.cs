@@ -4,10 +4,15 @@ using System.Windows;
 
 namespace CarsAndTrains.Classes.Nodes
 {
+    /// <summary>
+    /// A Node is a Abstract object that contains information for vehicles allowing them movement. 
+    /// </summary>
     public class Node
     {
         #region Fields
         public const double NODE_SIZE = 20;
+        public const string NORMAL_NODE = "0";
+        public const string TRAIN_TRIGGER_NODE = "1";
         public bool CanGoTo { get; set; }
         protected Point Position { get; set; }
         private bool isActive;

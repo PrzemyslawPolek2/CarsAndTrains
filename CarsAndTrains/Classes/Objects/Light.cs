@@ -5,28 +5,43 @@ namespace CarsAndTrains.Classes.Objects
 {
     public class Light
     {
-        public BitmapImage CurrentGraphic { get; protected set; }
-        public static BitmapImage LightsOff;
-        public static BitmapImage[] LightsOn = new BitmapImage[2];
-        public Point ActualPosition;
+        #region Constants
+        public const double LIGHT_WIDTH = 80;
+        private const int LightsSwitchDelay = 10;
 
+        #endregion
+
+        #region Fields
+        public bool Lights { get; set; } = false;
+        public bool LeftBlink { get; set; } = false;
+        public BitmapImage CurrentGraphic { get; protected set; }
+        #endregion
+
+        #region Variables
+        public static BitmapImage lightsOff;
+        public static BitmapImage[] lightsOn = new BitmapImage[2];
+
+        public Point ActualPosition;
+        private int _lightSwitchCurrent = 0;
+        #endregion
         public Light(Point actualPosition)
         {
             ActualPosition = actualPosition;
             UpdateGraphic();
         }
 
-        public bool Lights { get; set; } = false;
-        public bool LeftBlink { get; set; } = false;
 
-        private int _lightSwitchDelay = 10;
-        private int _lightSwitchCurrent = 0;
-
-
+        /// <summary>
+        /// Sets whether <see cref="Light"/> is blinking
+        /// </summary>
+        /// <param name="status">true if the <see cref="Light"/> is blinking</param>
         public void SetStatus(bool status)
         {
             Lights = !status;
         }
+        /// <summary>
+        /// Updates Light's status
+        /// </summary>
         public void Update()
         {
             UpdateGraphic();
@@ -36,15 +51,19 @@ namespace CarsAndTrains.Classes.Objects
         {
             if (Lights)
             {
+                //10 runs delay to each blink
                 _lightSwitchCurrent++;
-                if (_lightSwitchCurrent != _lightSwitchDelay)
+
+                if (_lightSwitchCurrent != LightsSwitchDelay)
                     return;
-                CurrentGraphic = LeftBlink ? LightsOn[0] : LightsOn[1];
+
+                //Switch light
+                CurrentGraphic = LeftBlink ? lightsOn[0] : lightsOn[1];
                 LeftBlink = !LeftBlink;
                 _lightSwitchCurrent = 0;
             }
             else
-                CurrentGraphic = LightsOff;
+                CurrentGraphic = lightsOff;
         }
     }
 }

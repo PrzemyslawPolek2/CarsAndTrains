@@ -25,7 +25,7 @@ namespace CarsAndTrains.Classes.Vehicles
             set => SetCounterNodes(value);
         }
         public BitmapImage CurrentGraphics { get; set; }
-        public double DeathAfterArivalTime { get; set; }
+        public double DeathTime { get; set; }
         public double VehicleSpeed { get; set; }
         public Point ActualPosition { get; set; }
         public double WidthGraphics { get; protected set; }
@@ -59,7 +59,7 @@ namespace CarsAndTrains.Classes.Vehicles
             this.VehicleSpeed = VehicleSpeed;
             this.CurrentSpeed = VehicleSpeed;
             this.NodesLeftToTravel = CounterNodes;
-            this.DeathAfterArivalTime = DeathAfterArivalTime;
+            this.DeathTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
         }
 

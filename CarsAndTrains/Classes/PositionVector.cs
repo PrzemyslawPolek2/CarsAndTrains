@@ -11,19 +11,19 @@
 
         #endregion
 
-        #region Getter_Setter
+        #region Constructors
         public PositionVector(double x, double y, double length)
         {
             this.X = x;
             this.Y = y;
             this.Length = length;
         }
+        #endregion
 
         public void SetNormalized(double normalizedX, double normalizedY)
         {
             this.NormalizedX = normalizedX;
             this.NormalizedY = normalizedY;
         }
-        #endregion
     }
 }

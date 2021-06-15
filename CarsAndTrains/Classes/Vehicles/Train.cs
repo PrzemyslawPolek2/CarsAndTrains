@@ -19,7 +19,7 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CurrentSpeed = VehicleSpeed;
-            this.DeathAfterArivalTime = DeathAfterArivalTime;
+            this.DeathTime = DeathAfterArivalTime;
             this.NodesLeftToTravel = CounterNodes;
             this.NextVehicleIndex = NextVehicleIndex;
             this.IsActive = true;
