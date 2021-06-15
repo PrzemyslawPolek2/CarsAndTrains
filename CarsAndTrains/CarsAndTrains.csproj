@@ -158,6 +158,10 @@
     <Resource Include="Resources\Images\Cars\car_6.png" />
     <Resource Include="Resources\Images\Cars\car_7.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Nodes\carNodes.txt" />
+    <Resource Include="Resources\Nodes\trainNodes.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets" Condition="Exists('packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

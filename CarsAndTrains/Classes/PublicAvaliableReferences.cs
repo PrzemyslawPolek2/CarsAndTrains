@@ -32,7 +32,8 @@ namespace CarsAndTrains.Classes
         public static List<Node> carNodes;
         protected static List<Image> carsArt;
 
-        public const string CAR_NODES_FILE_NAME = "/nodePositions.txt";
+        public const string CAR_NODES_FILE_NAME = "/carNodes.txt";
+        public const string CAR_NODES_LOCATION = @"\Resources\Nodes\";
         public const string CAR_RESOURCES_FOLDER = @"\Resources\Images\Cars\";
         public const string CAR_IMAGE_PREFIX = "car_";
 
@@ -48,7 +49,8 @@ namespace CarsAndTrains.Classes
         protected static List<Image> trainsArt;
         protected static List<Node> trainNodes;
 
-        public const string TRAIN_NODES_FILE_NAME = "/trainNodesPositions.txt";
+        public const string TRAIN_NODES_FILE_NAME = "/trainNodes.txt";
+        public const string TRAIN_NODES_LOCATION = @"\Resources\Nodes\";
         public const string TRAIN_RESOURCES_FOLDER = @"\Resources\Images\Trains\";
         public const string TRAIN_IMAGE_PREFIX = "train_";
 
@@ -133,8 +135,8 @@ namespace CarsAndTrains.Classes
             Car.FullTravelDistance = 0;
 
             //path to the folder with the nodes.txt
-            string _mainPath = System.Reflection.Assembly.GetEntryAssembly().Location;
-            _mainPath = System.IO.Path.GetDirectoryName(_mainPath) + CAR_NODES_FILE_NAME;
+            string _mainPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(Directory.GetCurrentDirectory()));
+            _mainPath += $"{CAR_NODES_LOCATION}{CAR_NODES_FILE_NAME}";
 
             using (StreamReader _streamReader = File.OpenText(_mainPath))
             {
@@ -173,8 +175,8 @@ namespace CarsAndTrains.Classes
             if (trainNodes is null)
                 trainNodes = new List<Node>();
 
-            string _mainPath = System.Reflection.Assembly.GetEntryAssembly().Location;
-            _mainPath = System.IO.Path.GetDirectoryName(_mainPath) + TRAIN_NODES_FILE_NAME;
+            string _mainPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(Directory.GetCurrentDirectory()));
+            _mainPath += $"{TRAIN_NODES_LOCATION}{TRAIN_NODES_FILE_NAME}";
 
             using (StreamReader _streamReader = File.OpenText(_mainPath))
             {
