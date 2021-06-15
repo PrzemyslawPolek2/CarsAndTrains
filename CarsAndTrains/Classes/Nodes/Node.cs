@@ -8,7 +8,7 @@ namespace CarsAndTrains.Classes.Nodes
     {
         #region Fields
         public const double NODE_SIZE = 20;
-        public bool CanGoThrough { get; set; }
+        public bool CanGoTo { get; set; }
         protected Point Position { get; set; }
         private bool isActive;
         #endregion
@@ -26,7 +26,7 @@ namespace CarsAndTrains.Classes.Nodes
         #region Constructors
         public Node()
         {
-            CanGoThrough = true;
+            CanGoTo = true;
         }
 
         public Node(Point position) : this()
@@ -83,7 +83,7 @@ namespace CarsAndTrains.Classes.Nodes
 
         public override string ToString()
         {
-            return $"\t{Position.X} \t {Position.Y} \t {CanGoThrough} \t {Vector.NormalizedX:#.###} \t {Vector.NormalizedY:#.###}";
+            return $"\t{Position.X} \t {Position.Y} \t {CanGoTo} \t {Vector.NormalizedX:#.###} \t {Vector.NormalizedY:#.###}";
         }
 
         public static string Header()

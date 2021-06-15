@@ -147,7 +147,7 @@ namespace CarsAndTrains.Classes
                 Node node = carNodes[i];
                 if (i + 1 >= carNodes.Count)
                 {
-                    node.CanGoThrough = false;
+                    node.CanGoTo = false;
                     node.CalculateVector(carNodes[i]);
                 }
                 else
@@ -527,7 +527,7 @@ namespace CarsAndTrains.Classes
                 for (int i = 0; i < cars.Count; i++)
                 {
                     Car car = cars[i];
-                    if (car.CounterNodes != (carNodes.Count - RailsNodeIndex + 1))
+                    if (car.NodesLeftToTravel != (carNodes.Count - RailsNodeIndex + 1))
                     {
                         continue;
                     }
@@ -582,9 +582,9 @@ namespace CarsAndTrains.Classes
             {
                 //train = TrainFactory.Create(trainNodes.Count, train.NextVehicleIndex);
                 train.DeathAfterArivalTime = TrainFactory.DEATH_TIME;
-                train.CounterNodes = trainNodes.Count;
+                train.NodesLeftToTravel = trainNodes.Count;
                 train.ResetPosition();
-                train.UpdatePositionVector(train.CounterNodes);
+                train.UpdatePositionVector(train.NodesLeftToTravel);
                 train.CanMove = true;
                 train.IsActive = true;
             }
@@ -593,7 +593,7 @@ namespace CarsAndTrains.Classes
         private static void ReincarnateCar(Car car)
         {
             car.IsActive = true;
-            car.CounterNodes = carNodes.Count;
+            car.NodesLeftToTravel = carNodes.Count;
             car.VehicleSpeed = CarFactory.RandomSpeedGenerator();
             car.ResetPosition();
             car.EnableVehicle();
@@ -616,7 +616,7 @@ namespace CarsAndTrains.Classes
             }
         }
 
-        public static bool IsCarInTheWay(Vehicle thisVehicle)
+        public static bool IsVehicleInTheWay(Vehicle thisVehicle)
         {
             lock (cars)
             {
@@ -745,13 +745,13 @@ namespace CarsAndTrains.Classes
         {
             lock (carNodes)
             {
-                carNodes[RailsNodeIndex].CanGoThrough = !carNodes[RailsNodeIndex].CanGoThrough;
+                carNodes[RailsNodeIndex].CanGoTo = !carNodes[RailsNodeIndex].CanGoTo;
             }
         }
 
         public static bool TurnPikeStatus()
         {
-            return carNodes[RailsNodeIndex].CanGoThrough;
+            return carNodes[RailsNodeIndex].CanGoTo;
         }
 
     }

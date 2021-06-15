@@ -9,7 +9,7 @@ namespace CarsAndTrains.Classes.Nodes
 
         public TrainTriggerNode(Point position)
         {
-            CanGoThrough = true; 
+            CanGoTo = true; 
             this.Position = position;
         }
 

@@ -8,21 +8,22 @@ namespace CarsAndTrains.Classes.Vehicles
 {
     public abstract class Vehicle
     {
-
+        #region Constants
         public const double VEHICLE_DISTANCE_OFFSET = 60f;
         public const double NODE_DISTANCE_OFFSET = .5f;
-        #region public fields
+        #endregion
+
+        #region Fields
         public bool CanMove { get; set; }
         public bool CanColide { get; set; }
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
-        public bool IsVehicleInFront { get; set; }
-        public int CounterNodes
+        public bool IsBehindVehicle { get; set; }
+        public int NodesLeftToTravel
         {
             get => counterNodes;
             set => SetCounterNodes(value);
         }
-
         public BitmapImage CurrentGraphics { get; set; }
         public double DeathAfterArivalTime { get; set; }
         public double VehicleSpeed { get; set; }
@@ -39,26 +40,14 @@ namespace CarsAndTrains.Classes.Vehicles
             set => LimitSpeed(value);
         }
 
-        protected virtual void SetCounterNodes(int value)
-        {
-            this.counterNodes = value;
-        }
-
-        protected void LimitSpeed(double value)
-        {
-            currentSpeed = value;
-            if (currentSpeed > VehicleSpeed)
-                currentSpeed = VehicleSpeed;
-            if (currentSpeed < 0)
-                currentSpeed = 0;
-        }
-
         #endregion
-        #region private fields
+
+        #region Variables
         protected double currentSpeed;
         protected PositionVector positionVector;
         protected int counterNodes;
         #endregion
+
         #region Constructors
         public Vehicle()
         {
@@ -69,7 +58,7 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             this.VehicleSpeed = VehicleSpeed;
             this.CurrentSpeed = VehicleSpeed;
-            this.CounterNodes = CounterNodes;
+            this.NodesLeftToTravel = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
         }
@@ -77,29 +66,32 @@ namespace CarsAndTrains.Classes.Vehicles
         #endregion
 
 
-        #region public methods
+        #region Updates
 
         public virtual void UpdateVehicle()
         {
             if (!IsActive)
                 return;
 
-            //get next node
-            Node nextNode = GetNextNode(CounterNodes - 1);
+            //Get Next Node
+            Node nextNode = GetNextNode(NodesLeftToTravel - 1);
 
             if (nextNode == null)
                 return;
 
-            if (!CanMove || !nextNode.CanGoThrough)
+            if (!CanMove || !nextNode.CanGoTo)
             {
                 CurrentSpeed = 0.0f;
                 return;
             }
+            //Can go forward, reset Current Speed
             this.CurrentSpeed = this.VehicleSpeed;
 
+            //If this vehicle doesn't ignore other vehicles
             if (CanColide)
                 LimitSpeedByVehicleDistance();
-            //apply movement
+
+            //Apply Speed to position
             MoveVehicleForward();
 
             bool didAriveToNode = (DistanceToTravel - TraveledDistance) <= NODE_DISTANCE_OFFSET;
@@ -108,18 +100,18 @@ namespace CarsAndTrains.Classes.Vehicles
 
         }
 
+        /// <summary>
+        /// Get Next Node if possible and update values associated with the node
+        /// </summary>
         protected virtual void UpdateNode()
         {
             //reducing count of nodes left
-
-            Node nextNode = GetNextNode(CounterNodes - 1);
+            Node nextNode = GetNextNode(NodesLeftToTravel - 1);
             if (nextNode is null)
                 return;
-            //if (!nextNode.CanGoThrough)
-            //    return;
-            
-            CounterNodes--;
+
             GetNewGraphic();
+            NodesLeftToTravel--;
 
             positionVector = nextNode.Vector;
             DistanceToTravel += positionVector.Length;
@@ -127,18 +119,16 @@ namespace CarsAndTrains.Classes.Vehicles
             RelatvieTraveledDistance = 0;
         }
 
-        protected virtual Node GetNextNode(int index)
-        {
-            return PublicAvaliableReferences.GetCarNode(index);
-        }
-
-        public virtual bool Arived() => CounterNodes == 0;
-        public virtual void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextCarGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
         #endregion
-        #region private methods
+
+        public virtual bool Arived() => NodesLeftToTravel <= 0;
+
+        /// <summary>
+        /// Updates vehicle position based on Current Speed and distance to the node
+        /// </summary>
         protected virtual void MoveVehicleForward()
         {
-            // don't let vehicle pass node
+            // Don't let vehicle pass node
             double _currentSpeed = this.CurrentSpeed;
             if (DistanceToTravel - TraveledDistance < _currentSpeed)
                 _currentSpeed -= DistanceToTravel - TraveledDistance;
@@ -146,7 +136,7 @@ namespace CarsAndTrains.Classes.Vehicles
                 _currentSpeed = 0;
             if (_currentSpeed > VehicleSpeed)
                 _currentSpeed = VehicleSpeed;
-            //apply to position
+            //Apply to position
             double xValue = _currentSpeed * positionVector.NormalizedX;
             double yValue = _currentSpeed * positionVector.NormalizedY;
 
@@ -159,43 +149,88 @@ namespace CarsAndTrains.Classes.Vehicles
             RelatvieTraveledDistance += _currentSpeed;
         }
 
+        /// <summary>
+        /// Control Speed of this Vehicle based on the vehicle in front
+        /// </summary>
         protected void LimitSpeedByVehicleDistance()
         {
-            //if no vehicle exists on path, no need to limit speed
-
+            //If no vehicle exists in front the vehicle, no need to limit speed
             if (!PublicAvaliableReferences.IsAnyVehicleInFront(this))
             {
-                IsVehicleInFront = false;
+                IsBehindVehicle = false;
                 return;
             }
-            if (PublicAvaliableReferences.IsCarInTheWay(this))
+
+            //If the next vehicle is too close, limit self speed to it's speed
+            if (PublicAvaliableReferences.IsVehicleInTheWay(this))
             {
-                IsVehicleInFront = true;
+                IsBehindVehicle = true;
                 this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this);
             }
             else
             {
-                IsVehicleInFront = false;
+                IsBehindVehicle = false;
                 this.CurrentSpeed = this.VehicleSpeed;
             }
         }
+
+
+        #region Gets
+        public virtual void GetNewGraphic() => this.CurrentGraphics = PublicAvaliableReferences.GetNextCarGraphic(positionVector.NormalizedX, positionVector.NormalizedY);
+
+        /// <summary>
+        /// Relative ratio of Distance Travel is <see cref="double"/> in 0.0f - 1.0f range. The closer the vehicle is to the next node, the closer the value aproaches 1.0f. 
+        /// </summary>
+        /// <returns>Ratio between 0.0f-1.0f</returns>
         public double GetRelativeDistanceTravelRatio()
         {
             return RelatvieTraveledDistance / RelativeDistanceToTravel;
         }
-
-        public virtual void DisableVehicle()
+        protected virtual Node GetNextNode(int index)
         {
-            IsVisible = false;
-            CanMove = false;
-            CanColide = false;
+            return PublicAvaliableReferences.GetCarNode(index);
         }
+
+        #endregion
+
+        #region Sets
+
+        /// <summary>
+        /// Enables Vehicle for movement and recognition during riding (Vehicle might still be InActive!)
+        /// </summary>
         public virtual void EnableVehicle()
         {
             IsVisible = true;
             CanMove = true;
             CanColide = true;
         }
+        /// <summary>
+        /// Disables Vehicle from movement and recognition during riding (Vehicle is still Active!)
+        /// </summary>
+        public virtual void DisableVehicle()
+        {
+            IsVisible = false;
+            CanMove = false;
+            CanColide = false;
+        }
+
+        protected virtual void SetCounterNodes(int value)
+        {
+            this.counterNodes = value;
+        }
+        /// <summary>
+        /// Control CurrentSpeed based on Min (0) and Max (VehicleSpeed)
+        /// </summary>
+        /// <param name="value"></param>
+        private void LimitSpeed(double value)
+        {
+            currentSpeed = value;
+            if (currentSpeed > VehicleSpeed)
+                currentSpeed = VehicleSpeed;
+            if (currentSpeed < 0)
+                currentSpeed = 0;
+        }
+
         #endregion
     }
 }
