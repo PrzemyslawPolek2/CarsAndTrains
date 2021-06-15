@@ -11,7 +11,7 @@ namespace CarsAndTrains.Classes.Controllers
             {
                 PublicAvaliableReferences.UpdateAllCars();
                 Thread.Sleep(THREAD_TICK);
-            } while (!PublicAvaliableReferences.IsCarPoolFinished);
+            } while (true);
 
             //once finished looping, abort self
             this.Abort();

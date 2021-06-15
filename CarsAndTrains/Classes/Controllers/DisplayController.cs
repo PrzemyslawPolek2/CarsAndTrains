@@ -13,9 +13,10 @@ namespace CarsAndTrains.Classes.Controllers
         {
             do
             {
-                ObjectsDisplayWindow.GetDisplayWindow.UpdateCarsLB();
-                ObjectsDisplayWindow.GetDisplayWindow.UpdateTrainsLB();
-                ObjectsDisplayWindow.TickCounter += THREAD_TICK * 5;
+                MainWindow.GetMain.UpdateCarsLB();
+                MainWindow.GetMain.UpdateTrainsLB();
+                MainWindow.GetMain.UpdateCarNodesLB();
+                MainWindow.TickCounter += THREAD_TICK * 5;
                 Thread.Sleep(THREAD_TICK * 5);
             } while (true);
         }

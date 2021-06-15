@@ -16,7 +16,9 @@ namespace CarsAndTrains.Classes.Vehicles
         public bool CanColide { get; set; }
         public bool IsVisible { get; set; }
         public bool IsActive { get; set; }
-        public int CounterNodes {
+        public bool IsVehicleInFront { get; set; }
+        public int CounterNodes
+        {
             get => counterNodes;
             set => SetCounterNodes(value);
         }
@@ -27,14 +29,16 @@ namespace CarsAndTrains.Classes.Vehicles
         public Point ActualPosition { get; set; }
         public double WidthGraphics { get; protected set; }
         public double TraveledDistance { get; protected set; }
+        public double RelatvieTraveledDistance { get; protected set; }
         public double DistanceToTravel { get; protected set; }
-        public int NextVehicleIndex { get; protected set; }
+        public double RelativeDistanceToTravel { get; protected set; }
+        public int NextVehicleIndex { get; set; }
         public double CurrentSpeed
         {
             get => currentSpeed;
             set => LimitSpeed(value);
         }
-        
+
         protected virtual void SetCounterNodes(int value)
         {
             this.counterNodes = value;
@@ -68,7 +72,6 @@ namespace CarsAndTrains.Classes.Vehicles
             this.CounterNodes = CounterNodes;
             this.DeathAfterArivalTime = DeathAfterArivalTime;
             this.NextVehicleIndex = NextVehicleIndex;
-
         }
 
         #endregion
@@ -80,7 +83,7 @@ namespace CarsAndTrains.Classes.Vehicles
         {
             if (!IsActive)
                 return;
-            
+
             //get next node
             Node nextNode = GetNextNode(CounterNodes - 1);
 
@@ -92,6 +95,7 @@ namespace CarsAndTrains.Classes.Vehicles
                 CurrentSpeed = 0.0f;
                 return;
             }
+            this.CurrentSpeed = this.VehicleSpeed;
 
             if (CanColide)
                 LimitSpeedByVehicleDistance();
@@ -107,17 +111,20 @@ namespace CarsAndTrains.Classes.Vehicles
         protected virtual void UpdateNode()
         {
             //reducing count of nodes left
-            
+
             Node nextNode = GetNextNode(CounterNodes - 1);
             if (nextNode is null)
                 return;
-            if (!nextNode.CanGoThrough)
-                return;
+            //if (!nextNode.CanGoThrough)
+            //    return;
+            
             CounterNodes--;
             GetNewGraphic();
 
             positionVector = nextNode.Vector;
             DistanceToTravel += positionVector.Length;
+            RelativeDistanceToTravel = positionVector.Length;
+            RelatvieTraveledDistance = 0;
         }
 
         protected virtual Node GetNextNode(int index)
@@ -135,6 +142,10 @@ namespace CarsAndTrains.Classes.Vehicles
             double _currentSpeed = this.CurrentSpeed;
             if (DistanceToTravel - TraveledDistance < _currentSpeed)
                 _currentSpeed -= DistanceToTravel - TraveledDistance;
+            if (_currentSpeed < 0)
+                _currentSpeed = 0;
+            if (_currentSpeed > VehicleSpeed)
+                _currentSpeed = VehicleSpeed;
             //apply to position
             double xValue = _currentSpeed * positionVector.NormalizedX;
             double yValue = _currentSpeed * positionVector.NormalizedY;
@@ -145,20 +156,32 @@ namespace CarsAndTrains.Classes.Vehicles
                 );
 
             TraveledDistance += _currentSpeed;
+            RelatvieTraveledDistance += _currentSpeed;
         }
 
         protected void LimitSpeedByVehicleDistance()
         {
             //if no vehicle exists on path, no need to limit speed
-            if (!PublicAvaliableReferences.IsAnyVehicleInFront(this))
-                return;
 
+            if (!PublicAvaliableReferences.IsAnyVehicleInFront(this))
+            {
+                IsVehicleInFront = false;
+                return;
+            }
             if (PublicAvaliableReferences.IsCarInTheWay(this))
             {
-                this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this.NextVehicleIndex);
+                IsVehicleInFront = true;
+                this.CurrentSpeed = PublicAvaliableReferences.GetNextVehicleSpeed(this);
             }
             else
+            {
+                IsVehicleInFront = false;
                 this.CurrentSpeed = this.VehicleSpeed;
+            }
+        }
+        public double GetRelativeDistanceTravelRatio()
+        {
+            return RelatvieTraveledDistance / RelativeDistanceToTravel;
         }
 
         public virtual void DisableVehicle()

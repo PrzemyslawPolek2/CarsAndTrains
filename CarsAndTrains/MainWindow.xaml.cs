@@ -1,5 +1,7 @@
 ﻿using CarsAndTrains.Classes;
 using CarsAndTrains.Classes.Controllers;
+using CarsAndTrains.Classes.Nodes;
+using CarsAndTrains.Classes.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,8 +19,8 @@ namespace CarsAndTrains
     public partial class MainWindow : Window
     {
         public static MainWindow GetMain;
-        public static ObjectsDisplayWindow infoWindow;
         public static List<Controller> threads;
+        public static int TickCounter = 0;
 
         private const int NODE_SIZE = 20;
 
@@ -32,8 +34,7 @@ namespace CarsAndTrains
             if (CreateNode)
                 return;
             PublicAvaliableReferences.Initialize(canvas);
-            infoWindow = new ObjectsDisplayWindow();
-            infoWindow.Show();
+            InitializeDebugWindow();
             CreateThreads();
             StartThreads();
             this.Closing += MainWindow_Closing;
@@ -136,19 +137,62 @@ namespace CarsAndTrains
                 }
             }
         }
+        private void InitializeDebugWindow()
+        {
 
-        public double GetCanvasWidth()
-        {
-            return canvas.Width;
+            List<Car> cars = PublicAvaliableReferences.cars;
+            CarsLB.Items.Add(Car.Header());
+            for (int i = 0; i < cars.Count; i++)
+                CarsLB.Items.Add(cars[i].ToString());
+            List<Train> trains = PublicAvaliableReferences.trains;
+            TrainsLB.Items.Add(Car.Header());
+            for (int i = 0; i < trains.Count; i++)
+                TrainsLB.Items.Add(trains[i].ToString());
+            List<Node> carNodes = PublicAvaliableReferences.carNodes;
+            CarNodesLB.Items.Add(Node.Header());
+            for (int i = 0; i < carNodes.Count; i++)
+                CarNodesLB.Items.Add(carNodes[i].ToString());
         }
-        public double GetCanvasHeight()
+
+        public void UpdateCarsLB()
         {
-            return canvas.Height;
+            List<Car> cars = PublicAvaliableReferences.cars;
+            for (int i = 0; i < cars.Count; i++)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    CarsLB.Items[i + 1] = ($"Car {cars[i]}");
+                });
+            }
+
         }
+        public void UpdateTrainsLB()
+        {
+            List<Train> trains = PublicAvaliableReferences.trains;
+            for (int i = 0; i < trains.Count; i++)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    TrainsLB.Items[i + 1] = $"Train {trains[i]}";
+                });
+            }
+        }
+
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            infoWindow.Close();
             AbortThreads();
+        }
+
+        internal void UpdateCarNodesLB()
+        {
+            List<Node> carNodes= PublicAvaliableReferences.carNodes;
+            for (int i = 0; i < carNodes.Count; i++)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    CarNodesLB.Items[i + 1] = $"Node {carNodes.Count - i} {carNodes[i]}";
+                });
+            }
         }
     }
 }

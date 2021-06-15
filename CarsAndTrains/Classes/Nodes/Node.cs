@@ -80,6 +80,16 @@ namespace CarsAndTrains.Classes.Nodes
             };
             Vector.SetNormalized(magnitudeVector.X, magnitudeVector.Y);
         }
+
+        public override string ToString()
+        {
+            return $"\t{Position.X} \t {Position.Y} \t {CanGoThrough} \t {Vector.NormalizedX:#.###} \t {Vector.NormalizedY:#.###}";
+        }
+
+        public static string Header()
+        {
+            return $"\t X \t Y \t CanGoThrough normX\t normY";
+        }
         #endregion
 
     }
