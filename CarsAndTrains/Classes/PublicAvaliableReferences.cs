@@ -328,7 +328,7 @@ namespace CarsAndTrains.Classes
 
 
                 trainsArt.Add(trainImage);
-                Panel.SetZIndex(trainImage, 5);
+                Panel.SetZIndex(trainImage, 7); // between 5 and 10 to fit in between TrunPikes and Lights
                 canvas.Children.Add(trainImage);
 
                 MainWindow.GetMain.Dispatcher.Invoke(UpdateOnCanvas(trainsArt[i], train));
